@@ -1,0 +1,30 @@
+GET http://localhost:8000/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsImlhdCI6MTY4OTIyMTQ1MSwiZXhwIjoxNjg5MjIxNDgxfQ.4ELSkuDmlaiArJEGdJuixNj4lytb0Hyb_cEh58iDYeo
+###
+
+DELETE http://localhost:8000/logout
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsImlhdCI6MTY4OTIyMTQ1MSwiZXhwIjoxNjg5MjIxNDgxfQ.4ELSkuDmlaiArJEGdJuixNj4lytb0Hyb_cEh58iDYeo"
+}
+
+###
+
+POST http://localhost:8000/refresh
+Content-Type: application/json
+Cookie: 'jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsImlhdCI6MTY4OTIyMzA4MSwiZXhwIjoxNjg5MjI0MjgxfQ.nXTAJFUo-OqHgsauDHf0E5_zh3cDgcek2Fe8cw1k-io'
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsImlhdCI6MTY4OTIyMzA4MSwiZXhwIjoxNjg5MjI0MjgxfQ.nXTAJFUo-OqHgsauDHf0E5_zh3cDgcek2Fe8cw1k-io"
+}
+
+###
+
+POST http://localhost:8000/login
+Content-Type: application/json
+
+{
+  "email": "user1@gmail.com",
+  "password": "password1"
+}
