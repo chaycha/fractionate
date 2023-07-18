@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useState } from "react";
 
 export const LoginPage = () => {
   const { login } = useAuth();
@@ -20,6 +21,35 @@ export const LoginPage = () => {
     login({
       email: data.get("email"),
       password: data.get("password"),
+    });
+    connectWallet();
+  };
+
+  const [selectedAddress, setSelectedAddress] = useState();
+  const HARDHAT_NETWORK_ID = `0xaa36a7`;
+
+  const connectWallet = async () => {
+    // To connect to the user's wallet, we have to run this method.
+    // It returns a promise that will resolve to the user's address.
+    const [obtainedAddress] = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+
+    // Check the network
+    if (window.ethereum.networkVersion !== HARDHAT_NETWORK_ID) {
+      switchChain();
+    }
+
+    // We can then use selectedAddress in our application
+    setSelectedAddress(obtainedAddress);
+
+    console.log("Connected to wallet");
+  };
+
+  const switchChain = async () => {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: HARDHAT_NETWORK_ID }],
     });
   };
 

@@ -30,9 +30,12 @@ export const AuthProvider = ({ children, userData }) => {
           return;
         }
         const receivedResponse = await response.json();
-        console.log(receivedResponse);
+        console.log("Logged in successfully:", receivedResponse);
         navigate("/dashboard/profile", { replace: true });
-        setUser({ email: payload.email });
+        setUser({
+          email: receivedResponse.email,
+          linkedWallet: receivedResponse.linkedWallet,
+        });
       } catch (err) {
         console.error(err.message);
       }
@@ -49,12 +52,9 @@ export const AuthProvider = ({ children, userData }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          token: user.refreshToken,
-        }),
       });
       if (response.ok) {
-        console.log("logged out successfully");
+        console.log("Logged out successfully");
         navigate("/", { replace: true });
         setUser(null);
       } else {
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children, userData }) => {
     } catch (err) {
       console.error(err.message);
     }
-  }, [setUser, navigate, user]);
+  }, [setUser, navigate]);
 
   // signup function
   const signup = useCallback(
@@ -77,6 +77,7 @@ export const AuthProvider = ({ children, userData }) => {
           body: JSON.stringify({
             name: payload.name,
             email: payload.email,
+            walletAddress: payload.walletAddress,
             password: payload.password,
           }),
         });
@@ -85,12 +86,15 @@ export const AuthProvider = ({ children, userData }) => {
           return;
         }
         const receivedResponse = await response.json();
-        console.log(receivedResponse);
+        console.log("Sign up successfully", receivedResponse);
         alert(
           "Sign up successful. You will now be redirected to your profile page."
         );
         navigate("/dashboard/profile", { replace: true });
-        setUser({ email: payload.email });
+        setUser({
+          email: receivedResponse.email,
+          linkedWallet: receivedResponse.linkedWallet,
+        });
       } catch (err) {
         console.error(err.message);
       }

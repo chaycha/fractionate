@@ -16,6 +16,7 @@ export const SignUpPage = () => {
     const data = new FormData(event.currentTarget);
     const name = data.get("name");
     const email = data.get("email");
+    const walletAddress = data.get("walletAddress");
     const password = data.get("password");
     const confirmPassword = data.get("confirmPassword");
     // if any of the field is empty
@@ -30,6 +31,7 @@ export const SignUpPage = () => {
     signup({
       name,
       email,
+      walletAddress,
       password,
     });
   };
@@ -69,6 +71,15 @@ export const SignUpPage = () => {
             label="Email Address"
             name="email"
             autoComplete="email"
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="walletAddress"
+            label="Wallet Address"
+            name="walletAddress"
             autoFocus
           />
           <TextField

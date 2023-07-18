@@ -35,11 +35,11 @@ function authenticateToken(req, res, next) {
 app.post("/signup", async (req, res) => {
   try {
     // req.body is a JSON body (payload) of the http request
-    const { name, email, password } = req.body;
+    const { name, email, walletAddress, password } = req.body;
     // make a new row with email and password
     const newUser = await pool.query(
-      "INSERT INTO user_auth (name, email, password) VALUES($1, $2, $3) RETURNING *",
-      [name, email, password]
+      "INSERT INTO user_list (name, email, password, linked_wallet) VALUES($1, $2, $3, $4) RETURNING *",
+      [name, email, password, walletAddress]
     );
     res.json(newUser.rows[0]);
     console.log("New user created");
@@ -53,7 +53,7 @@ app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const matchedUsers = await pool.query(
-      "SELECT * FROM user_auth WHERE email = $1 AND password = $2",
+      "SELECT * FROM user_list WHERE email = $1 AND password = $2",
       [email, password]
     );
     // If the email and password are correct, then matchedUsers.rows.length = 1
@@ -84,7 +84,13 @@ app.post("/login", async (req, res) => {
       });
 
       console.log("Sign in successfully");
-      return res.json({ accessToken: accessToken, refreshToken: refreshToken });
+      // return accesstoken, refreshtoken, user email, and wallet address
+      return res.json({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        email: matchedUsers.rows[0].email,
+        linkedWallet: matchedUsers.rows[0].linked_wallet,
+      });
     } else {
       // send status 401 (unauthorized) to the client
       res.sendStatus(401);
@@ -125,6 +131,7 @@ app.post("/refresh", (req, res) => {
 // Log out by deleting cookie
 // Note that jwt.verify() is not needed here (no need to check if the token is valid)
 app.delete("/logout", (req, res) => {
+  console.log("Log out successfully");
   res.clearCookie("jwt");
   res.sendStatus(204);
 });
