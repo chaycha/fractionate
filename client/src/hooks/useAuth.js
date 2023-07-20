@@ -15,7 +15,7 @@ export const AuthProvider = ({ children, userData }) => {
   const login = useCallback(
     async (payload) => {
       try {
-        const response = await fetch("/login", {
+        const response = await fetch("/db/auth/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children, userData }) => {
   // when executed, it sends a request to the server to delete the refresh token and removes the "jwt" cookie
   const logout = useCallback(async () => {
     try {
-      const response = await fetch("/logout", {
+      const response = await fetch("/db/auth/logout", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children, userData }) => {
   const signup = useCallback(
     async (payload) => {
       try {
-        const response = await fetch("/signup", {
+        const response = await fetch("/db/auth/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -1,0 +1,89 @@
+contract.balanceOf("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",0);
+contract.balanceOf("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb922dfdf",0);
+contract.balanceOf("jU", 0)
+contract
+contract.balanceOf("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",0);
+ );
+      0
+      "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+contract.balanceOf(
+contract.balanceOf(2,1);
+    );
+      0
+      "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+const foo = contract.balanceOf(
+contract.balanceOf();
+await contract.getAddress();
+await contract.getAddres();
+contract.getAddress();
+ const contract = new ethers.BaseContract(address, abi, signer);
+    const [signer] = await ethers.getSigners();
+    ];
+      },
+        type: "function",
+        stateMutability: "view",
+        ],
+          },
+            type: "uint256[]",
+            name: "",
+            internalType: "uint256[]",
+          {
+        outputs: [
+        name: "balanceOfBatch",
+        ],
+          },
+            type: "uint256[]",
+            name: "ids",
+            internalType: "uint256[]",
+          {
+          },
+            type: "address[]",
+            name: "accounts",
+            internalType: "address[]",
+          {
+        inputs: [
+      {
+      },
+        type: "function",
+        stateMutability: "view",
+        ],
+          },
+            type: "uint256",
+            name: "",
+            internalType: "uint256",
+          {
+        outputs: [
+        name: "balanceOf",
+        ],
+          },
+            type: "uint256",
+            name: "id",
+            internalType: "uint256",
+          {
+          },
+            type: "address",
+            name: "account",
+            internalType: "address",
+          {
+        inputs: [
+      {
+    const abi = [
+const address = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+quit
+ๆีระ
+await ethers.getSigners()
+await ether.getSigners()
+user
+deployer
+await ethers.getSigners();
+user
+const [deployer, user] = await ethers.getSigners();
+console.log(deployer.address);
+const [deployer, user] = await ethers.getSigners();
+});
+  });
+    console.log(`Account ${index}: ${account.address}`);
+  accounts.forEach((account, index) => {
+  const accounts = await ethers.getSigners();
+task("accounts", "Prints the list of accounts", async (_, { ethers }) => {
+ethers.getSigner()
