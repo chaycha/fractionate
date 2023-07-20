@@ -6,14 +6,34 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 export const SubmitAssetsPage = () => {
-  const handleSubmitAsset = (event) => {
+  const [user, setUser] = useLocalStorage("user", {}); // Access user data stored in local storage
+  const handleSubmitAsset = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const assetName = data.get("name");
     const assetPrice = data.get("price");
     //TODO send HTTP request to hardhat server to create new token
+    try {
+      const response = await fetch("/new-asset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          assetName: assetName,
+          assetPrice: assetPrice,
+          minerAddress: user.linkedWallet,
+        }),
+      });
+      const receivedResponse = await response.json();
+      console.log("Tokenise asset successfully:", receivedResponse);
+      alert("Tokenise asset successfully");
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   return (

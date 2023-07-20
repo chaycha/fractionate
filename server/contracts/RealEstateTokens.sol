@@ -9,12 +9,18 @@ import "hardhat/console.sol";
 contract RealEstateTokens is ERC1155, AccessControl, ERC1155Supply {
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    uint256 private _currentTokenId; // count how many tokens this contract has so far
 
     constructor() ERC1155("") {
-        _mint(msg.sender, 0, 10 ** 18, "");
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(URI_SETTER_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
+        _currentTokenId = 0;
+    }
+
+    struct TokenData {
+        string name;
+        uint256 pricePerToken;
     }
 
     function setURI(string memory newuri) public onlyRole(URI_SETTER_ROLE) {
@@ -37,6 +43,25 @@ contract RealEstateTokens is ERC1155, AccessControl, ERC1155Supply {
         bytes memory data
     ) public onlyRole(MINTER_ROLE) {
         _mintBatch(to, ids, amounts, data);
+    }
+
+    mapping(uint256 => TokenData) private _tokenData;
+
+    function mintNew(
+        string memory name,
+        uint256 amount,
+        uint256 pricePerToken,
+        address account
+    ) public onlyRole(MINTER_ROLE) {
+        _mint(account, _currentTokenId, amount, "0x");
+        _tokenData[_currentTokenId] = TokenData(name, pricePerToken);
+        _currentTokenId++; // increase the counter
+    }
+
+    function getTokenData(
+        uint256 tokenId
+    ) public view returns (TokenData memory) {
+        return _tokenData[tokenId];
     }
 
     // The following functions are overrides required by Solidity.

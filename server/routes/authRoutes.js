@@ -53,8 +53,6 @@ router.post("/login", async (req, res) => {
     // If the email and password are correct, then matchedUsers.rows.length = 1
     // Otherwise, matchedUsers.rows.length = 0
     if (matchedUsers.rows.length === 1) {
-      console.log("this");
-      //console.log(ACCESS_TOKEN_SECRET);
       const accessToken = jwt.sign(
         { email: email },
         process.env.ACCESS_TOKEN_SECRET,
@@ -107,7 +105,7 @@ router.post("/refresh", (req, res) => {
 
     // Check if refresh token is valid
     if (refreshToken == null) return res.sendStatus(401);
-    if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+    //if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
 
     // Verify refresh token using jwt
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
