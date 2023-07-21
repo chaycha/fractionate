@@ -16,10 +16,8 @@ export const ProtectedLayout = () => {
   // This can also happen when the user removes the Dapp from the "Connected
   // list of sites allowed access to your addresses" (Metamask > Settings > Connections)
   const handleAccountChange = ([newAddress]) => {
-    console.log(123);
     console.log(user);
     if (newAddress !== user.walletAddress) {
-      console.log(456);
       alert(
         "Wallet change detected. You will now be logged out. Please log in again while connecting to the registered MetaMask wallet"
       );
@@ -34,7 +32,7 @@ export const ProtectedLayout = () => {
     <div>
       <AppBar
         leftPages={[
-          { label: "Your Assets", path: "your-assets" },
+          { label: "My Assets", path: "my-assets" },
           { label: "Submit Assets", path: "submit-assets" },
           { label: "Trade", path: "trade" },
         ]}

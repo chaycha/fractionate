@@ -8,11 +8,11 @@ app.use(express.json());
 
 // routes
 const authRoutes = require("./routes/authRoutes");
-const newAssetRoutes = require("./routes/newAssetRoutes");
+const newAssetRoutes = require("./routes/assetRoutes");
 
 // use routes
 app.use("/auth", authRoutes);
-app.use("/new-asset", newAssetRoutes);
+app.use("/asset", newAssetRoutes);
 
 app.listen(4000, () => {
   console.log("server is listening on port 4000...");

@@ -58,10 +58,41 @@ contract RealEstateTokens is ERC1155, AccessControl, ERC1155Supply {
         _currentTokenId++; // increase the counter
     }
 
+    struct UserTokenData {
+        uint256 id;
+        string name;
+        uint256 pricePerToken;
+        uint256 balance;
+    }
+
     function getTokenData(
         uint256 tokenId
     ) public view returns (TokenData memory) {
         return _tokenData[tokenId];
+    }
+
+    // write a function to accpet a user's address and return a dynamic array of all tokens that user has (non-zero)
+    function getTokensOfUser(
+        address account
+    ) public view returns (UserTokenData[] memory) {
+        UserTokenData[] memory tokens = new UserTokenData[](_currentTokenId);
+        uint256 counter = 0;
+        for (uint256 i = 0; i < _currentTokenId; i++) {
+            if (balanceOf(account, i) > 0) {
+                tokens[counter] = UserTokenData(
+                    i,
+                    _tokenData[i].name,
+                    _tokenData[i].pricePerToken,
+                    balanceOf(account, i)
+                );
+                counter++;
+            }
+        }
+        // resize array remove unused elements
+        assembly {
+            mstore(tokens, counter)
+        }
+        return tokens;
     }
 
     // The following functions are overrides required by Solidity.

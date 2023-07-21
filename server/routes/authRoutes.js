@@ -58,8 +58,6 @@ router.post("/login", async (req, res) => {
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "30s" }
       );
-      console.log(accessToken);
-
       const refreshToken = jwt.sign(
         { email: email },
         process.env.REFRESH_TOKEN_SECRET,

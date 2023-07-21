@@ -9,13 +9,13 @@ import { HomePage } from "./pages/Home";
 import { SignUpPage } from "./pages/SignUp";
 import { ProfilePage } from "./pages/Profile";
 import { SettingsPage } from "./pages/Settings";
+import { MyAssetsPage } from "./pages/MyAssets";
+import { SubmitAssetsPage } from "./pages/SubmitAssets";
+import { TradePage } from "./pages/Trade";
 import { ProtectedLayout } from "./components/ProtectedLayout";
 import { HomeLayout } from "./components/HomeLayout";
 import { AuthLayout } from "./components/AuthLayout";
 import "./styles.css";
-import { YourAssetsPage } from "./pages/YourAssets";
-import { SubmitAssetsPage } from "./pages/SubmitAssets";
-import { TradePage } from "./pages/Trade";
 
 // ideally, instead of setTimeout, it would be an API call to server to get logged in user data
 
@@ -49,7 +49,7 @@ export const router = createBrowserRouter(
       </Route>
 
       <Route path="/dashboard" element={<ProtectedLayout />}>
-        <Route path="your-assets" element={<YourAssetsPage />} />
+        <Route path="my-assets" element={<MyAssetsPage />} />
         <Route path="submit-assets" element={<SubmitAssetsPage />} />
         <Route path="trade" element={<TradePage />} />
         <Route path="profile" element={<ProfilePage />} />

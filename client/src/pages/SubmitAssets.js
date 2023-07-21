@@ -9,7 +9,7 @@ import Typography from "@mui/material/Typography";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 export const SubmitAssetsPage = () => {
-  const [user, setUser] = useLocalStorage("user", {}); // Access user data stored in local storage
+  const [user] = useLocalStorage("user", {}); // Access user data stored in local storage
   const handleSubmitAsset = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -17,7 +17,7 @@ export const SubmitAssetsPage = () => {
     const assetPrice = data.get("price");
     //TODO send HTTP request to hardhat server to create new token
     try {
-      const response = await fetch("/new-asset", {
+      const response = await fetch("/asset/new-asset", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,8 +29,12 @@ export const SubmitAssetsPage = () => {
         }),
       });
       const receivedResponse = await response.json();
+      if (!response.ok) {
+        throw new Error(receivedResponse.message);
+      }
+      console.log(receivedResponse);
       console.log("Tokenise asset successfully:", receivedResponse);
-      alert("Tokenise asset successfully");
+      alert(`Tokenise asset ${receivedResponse.token} successfully`);
     } catch (err) {
       console.error(err.message);
     }
