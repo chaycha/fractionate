@@ -17,3 +17,5 @@ app.use("/asset", newAssetRoutes);
 app.listen(4000, () => {
   console.log("server is listening on port 4000...");
 });
+
+module.exports = app;
