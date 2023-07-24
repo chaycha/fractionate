@@ -14,6 +14,9 @@ const newAssetRoutes = require("./routes/assetRoutes");
 app.use("/auth", authRoutes);
 app.use("/asset", newAssetRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 app.listen(4000, () => {
   console.log("server is listening on port 4000...");
 });
