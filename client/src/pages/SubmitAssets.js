@@ -8,6 +8,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export const SubmitAssetsPage = () => {
   const [user] = useLocalStorage("user", {}); // Access user data stored in local storage
   const handleSubmitAsset = async (event) => {
@@ -17,7 +19,7 @@ export const SubmitAssetsPage = () => {
     const assetPrice = data.get("price");
     //TODO send HTTP request to hardhat server to create new token
     try {
-      const response = await fetch("/asset/new-asset", {
+      const response = await fetch(`${apiUrl}/asset/new-asset`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

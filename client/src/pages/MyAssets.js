@@ -10,13 +10,15 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export const MyAssetsPage = () => {
   const [user] = useLocalStorage("user", {}); // Access user data stored in local storage
   const [userTokenData, setUserTokenData] = useState([]);
 
   const getAssets = async () => {
     try {
-      const response = await fetch("/asset/my-assets", {
+      const response = await fetch(`${apiUrl}/asset/my-assets`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

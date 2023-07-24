@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocalStorage } from "./useLocalStorage";
 
 const AuthContext = createContext();
+const apiUrl = process.env.REACT_APP_API_URL;
 
 export const AuthProvider = ({ children, userData }) => {
   // Using custom useLocalStorage hook to store user data in local storage
@@ -15,7 +16,7 @@ export const AuthProvider = ({ children, userData }) => {
   const login = useCallback(
     async (payload) => {
       try {
-        const response = await fetch("/login", {
+        const response = await fetch(`${apiUrl}/auth/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children, userData }) => {
   // when executed, it sends a request to the server to delete the refresh token and removes the "jwt" cookie
   const logout = useCallback(async () => {
     try {
-      const response = await fetch("/logout", {
+      const response = await fetch(`${apiUrl}/auth/logout`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +70,7 @@ export const AuthProvider = ({ children, userData }) => {
   const signup = useCallback(
     async (payload) => {
       try {
-        const response = await fetch("/auth/signup", {
+        const response = await fetch(`${apiUrl}/auth/signup`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
