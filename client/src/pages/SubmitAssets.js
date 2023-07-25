@@ -17,10 +17,11 @@ export const SubmitAssetsPage = () => {
     const data = new FormData(event.currentTarget);
     const assetName = data.get("name");
     const assetPrice = data.get("price");
-    //TODO send HTTP request to hardhat server to create new token
+    // send HTTP request to hardhat server to create new token
     try {
       const response = await fetch(`${apiUrl}/asset/new-asset`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

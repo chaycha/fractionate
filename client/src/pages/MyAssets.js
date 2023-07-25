@@ -20,6 +20,7 @@ export const MyAssetsPage = () => {
     try {
       const response = await fetch(`${apiUrl}/asset/my-assets`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

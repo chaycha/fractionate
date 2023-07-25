@@ -18,6 +18,7 @@ export const AuthProvider = ({ children, userData }) => {
       try {
         const response = await fetch(`${apiUrl}/auth/login`, {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -50,6 +51,7 @@ export const AuthProvider = ({ children, userData }) => {
     try {
       const response = await fetch(`${apiUrl}/auth/logout`, {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -72,6 +74,7 @@ export const AuthProvider = ({ children, userData }) => {
       try {
         const response = await fetch(`${apiUrl}/auth/signup`, {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },

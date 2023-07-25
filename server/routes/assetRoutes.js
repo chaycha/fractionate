@@ -1,5 +1,4 @@
 require("dotenv").config();
-//const hre = require("hardhat");
 const ethers = require("ethers");
 const express = require("express");
 const router = express.Router();
@@ -35,14 +34,8 @@ router.use(authenticateToken);
 // Contract deployer pays for minting fee
 router.post("/new-asset", async (req, res) => {
   try {
-    /*
-    const contract = await hre.ethers.getContractAt(
-      "RealEstateTokens",
-      process.env.DEPLOYED_CONTRACT_ADDRESS
-    );
-    */
     // Provider to connect to Sepolia from Alchemy
-    const sepoliaProvider = new ethers.providers.JsonRpcProvider(
+    const sepoliaProvider = new ethers.JsonRpcProvider(
       process.env.SEPOLIA_RPC_URL
     );
     // Fractionate admin pays for all fees
@@ -51,7 +44,7 @@ router.post("/new-asset", async (req, res) => {
       sepoliaProvider
     );
     const contract = new ethers.Contract(
-      process.env.DEPLOYED_CONTRACT_ADDRESS,
+      process.env.DEPLOYED_SEPOLIA_CONTRACT_ADDRESS,
       [
         "function mintNew(string memory name, uint256 totalSupply, uint256 pricePerToken, address minerAddress) public",
       ],
@@ -74,6 +67,9 @@ router.post("/new-asset", async (req, res) => {
         pricePerToken,
         minerAddress
       );
+    console.log(
+      `Tokenise asset successfully. Name:${assetName}, Amount:${process.env.TOKEN_AMOUNT} Price:${pricePerToken}, Miner:${minerAddress}`
+    );
     res.status(200).json({ message: "Tokenise success", token: assetName });
   } catch (error) {
     console.log(error);
@@ -84,14 +80,8 @@ router.post("/new-asset", async (req, res) => {
 // create a route to serve getAsset
 router.post("/my-assets", async (req, res) => {
   try {
-    /*
-    const contract = await hre.ethers.getContractAt(
-      "RealEstateTokens",
-      process.env.DEPLOYED_CONTRACT_ADDRESS
-    );
-    */
     // Provider to connect to Sepolia from Alchemy
-    const sepoliaProvider = new ethers.providers.JsonRpcProvider(
+    const sepoliaProvider = new ethers.JsonRpcProvider(
       process.env.SEPOLIA_RPC_URL
     );
     // Fractionate admin pays for all fees
@@ -100,9 +90,9 @@ router.post("/my-assets", async (req, res) => {
       sepoliaProvider
     );
     const contract = new ethers.Contract(
-      process.env.DEPLOYED_CONTRACT_ADDRESS,
+      process.env.DEPLOYED_SEPOLIA_CONTRACT_ADDRESS,
       [
-        "function getTokensOfUser(address account) public view returns (UserTokenData[] memory) struct UserTokenData { uint256 id; string name; uint256 pricePerToken; uint256 balance; }",
+        "function getTokensOfUser(address account) public view returns (tuple(uint256 id, string name, uint256 pricePerToken, uint256 balance)[] memory)",
       ],
       sepoliaProvider
     );
@@ -122,6 +112,10 @@ router.post("/my-assets", async (req, res) => {
         balance: Number(userTokenData.balance), // Converting balance to a Number
       };
     });
+    console.log(
+      "Retrieved token list from blockchain successfully",
+      formattedOwnedTokenList
+    );
     res.status(200).json({
       message: "Get assets success",
       ownedTokenList: formattedOwnedTokenList,

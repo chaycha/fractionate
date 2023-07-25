@@ -4,8 +4,9 @@ const router = express.Router();
 const pool = require("./db");
 const jwt = require("jsonwebtoken");
 const cookieparser = require("cookie-parser");
+const { db, sql } = require("@vercel/postgres");
 
-// use middleware
+// use middleware;
 router.use(cookieparser());
 
 // custom middleware
@@ -28,13 +29,21 @@ function authenticateToken(req, res, next) {
 // Sign up a new user
 router.post("/signup", async (req, res) => {
   try {
-    // req.body is a JSON body (payload) of the http request
+    // req.body is a JSON body (payload) of the HTTP request
     const { name, email, walletAddress, password } = req.body;
+
     // make a new row with email and password
+    // Uncomment this section if you want to use local PostgresQL database
+    /*
     const newUser = await pool.query(
       "INSERT INTO user_list (name, email, password, linked_wallet) VALUES($1, $2, $3, $4) RETURNING *",
       [name, email, password, walletAddress]
     );
+    */
+    // Uncomment this section if you want to use Vercel Postgres (require setting up environment variables for connection)
+    const newUser =
+      await sql`INSERT INTO user_list (name, email, password, linked_wallet) VALUES(${name}, ${email}, ${password}, ${walletAddress}) RETURNING *;`;
+
     res.json(newUser.rows[0]);
     console.log("New user created");
   } catch (err) {
@@ -46,10 +55,18 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Uncomment this section if you want to use local PostgresQL database
+    /*
     const matchedUsers = await pool.query(
       "SELECT * FROM user_list WHERE email = $1 AND password = $2",
       [email, password]
     );
+    */
+    // Uncomment this section if you want to use Vercel Postgres (require setting up environment variables for connection)
+    const matchedUsers =
+      await sql`SELECT * FROM user_list WHERE email = ${email} AND password = ${password};`;
+
     // If the email and password are correct, then matchedUsers.rows.length = 1
     // Otherwise, matchedUsers.rows.length = 0
     if (matchedUsers.rows.length === 1) {
@@ -64,10 +81,6 @@ router.post("/login", async (req, res) => {
         { expiresIn: "20m" }
       );
 
-      // allow cross origin (port 3000) to access the cookie
-      res.set("Access-Control-Allow-Origin", "http://localhost:3000");
-      res.set("Access-Control-Allow-Credentials", "true");
-
       // Assigning refresh token in http-only cookie
       res.cookie("jwt", refreshToken, {
         httpOnly: true,
@@ -77,7 +90,6 @@ router.post("/login", async (req, res) => {
       });
 
       console.log("Sign in successfully");
-      // return accesstoken, refreshtoken, user email, and wallet address
       return res.json({
         accessToken: accessToken,
         refreshToken: refreshToken,
