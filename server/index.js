@@ -15,7 +15,7 @@ app.use("/auth", authRoutes);
 app.use("/asset", newAssetRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Hello World1!");
+  res.send("Hello World12!");
 });
 app.listen(4000, () => {
   console.log("server is listening on port 4000...");
