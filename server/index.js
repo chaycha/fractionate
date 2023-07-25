@@ -8,11 +8,11 @@ app.use(express.json());
 
 // routes
 const authRoutes = require("./routes/authRoutes");
-const newAssetRoutes = require("./routes/assetRoutes");
+//const newAssetRoutes = require("./routes/assetRoutes");
 
 // use routes
 app.use("/auth", authRoutes);
-app.use("/asset", newAssetRoutes);
+//app.use("/asset", newAssetRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World123!");
