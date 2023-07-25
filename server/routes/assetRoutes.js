@@ -1,5 +1,6 @@
 require("dotenv").config();
-const hre = require("hardhat");
+//const hre = require("hardhat");
+const ethers = require("ethers");
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
@@ -34,9 +35,27 @@ router.use(authenticateToken);
 // Contract deployer pays for minting fee
 router.post("/new-asset", async (req, res) => {
   try {
+    /*
     const contract = await hre.ethers.getContractAt(
       "RealEstateTokens",
       process.env.DEPLOYED_CONTRACT_ADDRESS
+    );
+    */
+    // Provider to connect to Sepolia from Alchemy
+    const sepoliaProvider = new ethers.providers.JsonRpcProvider(
+      process.env.SEPOLIA_RPC_URL
+    );
+    // Fractionate admin pays for all fees
+    const fractionateAdmin = new ethers.Wallet(
+      process.env.ADMIN_PRIVATE_KEY,
+      sepoliaProvider
+    );
+    const contract = new ethers.Contract(
+      process.env.DEPLOYED_CONTRACT_ADDRESS,
+      [
+        "function mintNew(string memory name, uint256 totalSupply, uint256 pricePerToken, address minerAddress) public",
+      ],
+      sepoliaProvider
     );
     // if error could not get contract
     if (!contract) {
@@ -46,13 +65,15 @@ router.post("/new-asset", async (req, res) => {
     const pricePerToken = Math.floor(
       (assetPrice * process.env.MULTIPLIER) / process.env.TOKEN_AMOUNT
     );
-    //await contract.mint(minerAddress, 5, process.env.TOKEN_AMOUNT, "0x");
-    await contract.mintNew(
-      assetName,
-      process.env.TOKEN_AMOUNT,
-      pricePerToken,
-      minerAddress
-    );
+    // connect to admin (who will pay for minting fee) before minting
+    await contract
+      .connect(fractionateAdmin)
+      .mintNew(
+        assetName,
+        process.env.TOKEN_AMOUNT,
+        pricePerToken,
+        minerAddress
+      );
     res.status(200).json({ message: "Tokenise success", token: assetName });
   } catch (error) {
     console.log(error);
@@ -63,16 +84,36 @@ router.post("/new-asset", async (req, res) => {
 // create a route to serve getAsset
 router.post("/my-assets", async (req, res) => {
   try {
+    /*
     const contract = await hre.ethers.getContractAt(
       "RealEstateTokens",
       process.env.DEPLOYED_CONTRACT_ADDRESS
+    );
+    */
+    // Provider to connect to Sepolia from Alchemy
+    const sepoliaProvider = new ethers.providers.JsonRpcProvider(
+      process.env.SEPOLIA_RPC_URL
+    );
+    // Fractionate admin pays for all fees
+    const fractionateAdmin = new ethers.Wallet(
+      process.env.ADMIN_PRIVATE_KEY,
+      sepoliaProvider
+    );
+    const contract = new ethers.Contract(
+      process.env.DEPLOYED_CONTRACT_ADDRESS,
+      [
+        "function getTokensOfUser(address account) public view returns (UserTokenData[] memory) struct UserTokenData { uint256 id; string name; uint256 pricePerToken; uint256 balance; }",
+      ],
+      sepoliaProvider
     );
     // if error could not get contract
     if (!contract) {
       return res.status(500).json({ message: "Could not get contract" });
     }
     const { userAddress } = req.body;
-    const ownedTokenList = await contract.getTokensOfUser(userAddress);
+    const ownedTokenList = await contract
+      .connect(fractionateAdmin)
+      .getTokensOfUser(userAddress);
     const formattedOwnedTokenList = ownedTokenList.map((userTokenData) => {
       return {
         id: Number(userTokenData.id), // Assuming id is a Big Number, converting it to a Number

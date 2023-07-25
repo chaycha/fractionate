@@ -1,0 +1,77 @@
+await provider.getBalance(z.address)
+await provider.getBalance(x.address)
+await provider.getBalance(z.address)
+await provider.getBalance(x.address)
+await provider.getBalance(z.address)
+provider.getBalance(z.address)
+z
+var z = await ethers.getSigner('0xBcd4042DE499D14e55001CcbB24a551F3b954096')
+const y = await ethers.getSigner('0xBcd4042DE499D14e55001CcbB24a551F3b954096')
+const y = await ethers.getSigner(10)
+await provider.getBalance(x.address)
+provider.getBalance(x.address)
+provider = ethers.provider
+x.address
+x
+const [x] = await ethers.getSigners()
+var a0 = await ethers.getSigner()
+var acc0 = await ethers.getSigner()
+const acc0 = await ethers.getSigner()
+const acc0 = await ethers.getSigner(0)
+await ct.balanceOf("0x70997970C51812dc3A010C7d01b50e0d17dc79C8",1)
+ct.balanceOf('0x70997970C51812dc3A010C7d01b50e0d17dc79C8',1)
+const ct = await ethers.getContractAt("RealEstateTokens", '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266')
+.exit
+const ct = await ethers.getContractAt("RealEstateTokens", '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266')
+ct.balanceOf('0x70997970C51812dc3A010C7d01b50e0d17dc79C8',1)
+at.balanceOf('0x70997970C51812dc3A010C7d01b50e0d17dc79C8', 1)
+ct
+const ct = await ethers.getContractAt("RealEstateTokens", '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266')
+await contract
+const contract = ethers.getContractAt("RealEstateTokens", '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266')
+clear
+.clear
+clear
+.exit
+await contract.balanceOf(acc2.address, 5)
+await ethers.provider.getBalance(acc0)
+await contract.mint(acc2.address, 5, 199, "0x")
+await ethers.provider.getBalance(acc0)
+const acc0 = await ethers.provider.getSigner(0)
+await ethers.provider.getBalance(acc2)
+ethers.provider.getBalance(acc2)
+const acc2  = await ethers.provider.getSigner(2);
+const [account0] = await ethers.provider.getSigner();
+const [account] = await ethers.provider.getSigners();
+const [acc] = await ethers.provider.getSigners();
+const [acc] = await ethers.provider.listAccounts();
+await contract.balanceOf("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC", 5);
+contract
+contract = await hre.ethers.getContractAt("RealEstateTokens", '0x5FbDB2315678afecb367f032d93F642f64180aa3')
+contract
+await r
+r
+await r
+r
+const r = ethers.provider.getNetwork()
+const n = ethers.provider.getNetwork()
+n
+await n
+n
+const n = await ethers.provider.getNetwork()
+await hre.ethers.provider.getNetwork()
+console.log(await ethers.provider.getNetwork());
+await contract.balanceOf("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC", 5);
+hre.network
+await contract.balanceOf("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC", 5);
+contract = await hre.ethers.getContractAt("RealEstateTokens", '0x5FbDB2315678afecb367f032d93F642f64180aa3')
+await contract.balanceOf("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC", 5);
+contract = await hre.ethers.getContractAt("RealEstateTokens", '0x5FbDB2315678afecb367f032d93F642f64180aa3')
+contract = await hre.ethers.getContractAt("RealEstateTokens, '0x5FbDB2315678afecb367f032d93F642f64180aa3')
+contract = await hre.ethers.getContractAt("RealEstateTokens, '0x5FbDB2315678afecb367f032d93F642f64180aa3');
+hre
+const hre = require("hardhat")
+    process.env.DEPLOYED_CONTRACT_ADDRESS
+    "RealEstateTokens",
+contract = await hre.ethers.getContractAt(
+await contract.balanceOf("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC", 5);
