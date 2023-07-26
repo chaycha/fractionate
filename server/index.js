@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
+import { inject } from "@vercel/analytics";
 
 // middleware
 app.use(
@@ -33,3 +34,5 @@ app.listen(4000, () => {
 });
 
 module.exports = app;
+
+inject();
