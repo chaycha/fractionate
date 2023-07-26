@@ -34,7 +34,6 @@ export const MyAssetsPage = () => {
       }
       console.log("Get assets successfully:", receivedResponse);
       setUserTokenData(receivedResponse.ownedTokenList);
-      console.log(userTokenData);
     } catch (err) {
       console.error(err.message);
     }

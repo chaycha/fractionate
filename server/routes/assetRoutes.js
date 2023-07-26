@@ -34,7 +34,7 @@ router.use(authenticateToken);
 // Contract deployer pays for minting fee
 router.post("/new-asset", async (req, res) => {
   try {
-    // Provider to connect to Sepolia from Alchemy
+    // Provider to connect to Sepolia testnet from Alchemy
     const sepoliaProvider = new ethers.JsonRpcProvider(
       process.env.SEPOLIA_RPC_URL
     );
@@ -43,6 +43,7 @@ router.post("/new-asset", async (req, res) => {
       process.env.ADMIN_PRIVATE_KEY,
       sepoliaProvider
     );
+    // Retrieve a contract instance using contract address, ABI, and provider
     const contract = new ethers.Contract(
       process.env.DEPLOYED_SEPOLIA_CONTRACT_ADDRESS,
       [
