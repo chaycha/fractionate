@@ -45,7 +45,7 @@ router.post("/new-asset", async (req, res) => {
     );
     // Retrieve a contract instance using contract address, ABI, and provider
     const contract = new ethers.Contract(
-      process.env.DEPLOYED_SEPOLIA_CONTRACT_ADDRESS,
+      process.env.DEPLOYED_TOKEN_ADDRESS,
       [
         "function mintNew(string memory name, uint256 totalSupply, uint256 pricePerToken, address minerAddress) public",
       ],
@@ -91,7 +91,7 @@ router.post("/my-assets", async (req, res) => {
       sepoliaProvider
     );
     const contract = new ethers.Contract(
-      process.env.DEPLOYED_SEPOLIA_CONTRACT_ADDRESS,
+      process.env.DEPLOYED_TOKEN_ADDRESS,
       [
         "function getTokensOfUser(address account) public view returns (tuple(uint256 id, string name, uint256 pricePerToken, uint256 balance)[] memory)",
       ],

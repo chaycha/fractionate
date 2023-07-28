@@ -1,5 +1,6 @@
 // Scripts for deploying RealEstateTokens
 // To specify network, use --network flag when running the script
+// IMPORTANT: After each re-deployment, update both contract addresses in server/.env
 const hre = require("hardhat");
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
@@ -9,9 +10,17 @@ async function main() {
 
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const contract = await hre.ethers.deployContract("RealEstateTokens");
+  // Deploy RealEstateTokens.sol
+  const tokenContract = await hre.ethers.deployContract("RealEstateTokens");
+  const tokenContractAddress = await tokenContract.getAddress();
+  console.log("RealEstateTokens contract address:", tokenContractAddress);
 
-  console.log("Tokens contract address:", await contract.getAddress());
+  // Use address of RealEstateTokens contract to deploy RealEstateDAO.sol
+  const DAOContract = await hre.ethers.deployContract("RealEstateDAO", [
+    tokenContractAddress,
+  ]);
+  const DAOContractAddress = await DAOContract.getAddress();
+  console.log("RealEstateDAO contract address:", DAOContractAddress);
 }
 
 main()

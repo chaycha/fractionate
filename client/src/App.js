@@ -25,7 +25,7 @@ const getUserData = () =>
       setTimeout(() => {
         const user = window.localStorage.getItem("user");
         resolve(user);
-      }, 3000) // set loading delay of 3000ms to allow the promise to be completed
+      }, 1500) // set loading delay of 1500ms to allow the promise to be completed
   );
 
 // for error
