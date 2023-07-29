@@ -18,11 +18,11 @@ app.use(express.json());
 
 // routes
 const authRoutes = require("./routes/authRoutes");
-const newAssetRoutes = require("./routes/assetRoutes");
+const assetRoutes = require("./routes/assetRoutes");
 
 // use routes
 app.use("/auth", authRoutes);
-app.use("/asset", newAssetRoutes);
+app.use("/asset", assetRoutes);
 
 app.get("/", (req, res) => {
   res.send("If you can see this message, the server is running.");

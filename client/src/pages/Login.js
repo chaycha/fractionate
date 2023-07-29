@@ -26,6 +26,7 @@ export const LoginPage = () => {
   };
 
   const [selectedAddress, setSelectedAddress] = useState();
+  // Need to change to sepoia network id
   const HARDHAT_NETWORK_ID = `0xaa36a7`;
 
   const connectWallet = async () => {
@@ -35,22 +36,24 @@ export const LoginPage = () => {
       method: "eth_requestAccounts",
     });
 
+    /*
     // Check the network
     if (window.ethereum.networkVersion !== HARDHAT_NETWORK_ID) {
       switchChain();
     }
 
+    const switchChain = async () => {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: HARDHAT_NETWORK_ID }],
+      });
+    };
+    */
+
     // We can then use selectedAddress in our application
     setSelectedAddress(obtainedAddress);
 
     console.log("Connected to wallet");
-  };
-
-  const switchChain = async () => {
-    await window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: HARDHAT_NETWORK_ID }],
-    });
   };
 
   /* unused code for refresh token

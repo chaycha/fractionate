@@ -4,14 +4,15 @@ import {
   createRoutesFromElements,
   defer,
 } from "react-router-dom";
-import { LoginPage } from "./pages/Login";
 import { HomePage } from "./pages/Home";
+import { LoginPage } from "./pages/Login";
 import { SignUpPage } from "./pages/SignUp";
 import { ProfilePage } from "./pages/Profile";
 import { SettingsPage } from "./pages/Settings";
 import { MyAssetsPage } from "./pages/MyAssets";
 import { SubmitAssetsPage } from "./pages/SubmitAssets";
-import { TradePage } from "./pages/Trade";
+import { TransferPage } from "./pages/Transfer";
+import { ProposalsPage } from "./pages/Proposals";
 import { ProtectedLayout } from "./components/ProtectedLayout";
 import { HomeLayout } from "./components/HomeLayout";
 import { AuthLayout } from "./components/AuthLayout";
@@ -36,7 +37,7 @@ const getUserData = () =>
 //     }, 3000)
 //   );
 
-export const router = createBrowserRouter(
+export const App = createBrowserRouter(
   createRoutesFromElements(
     <Route
       element={<AuthLayout />}
@@ -50,8 +51,9 @@ export const router = createBrowserRouter(
 
       <Route path="/dashboard" element={<ProtectedLayout />}>
         <Route path="my-assets" element={<MyAssetsPage />} />
+        <Route path="my-assets/:tokenId" element={<ProposalsPage />} />
         <Route path="submit-assets" element={<SubmitAssetsPage />} />
-        <Route path="trade" element={<TradePage />} />
+        <Route path="transfer" element={<TransferPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>

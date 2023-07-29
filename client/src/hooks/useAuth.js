@@ -33,7 +33,7 @@ export const AuthProvider = ({ children, userData }) => {
         }
         const receivedResponse = await response.json();
         console.log("Logged in successfully:", receivedResponse);
-        navigate("/dashboard/profile", { replace: true });
+        navigate("/dashboard/my-assets", { replace: true });
         setUser({
           email: receivedResponse.email,
           linkedWallet: receivedResponse.linkedWallet,

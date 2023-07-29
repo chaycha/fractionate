@@ -34,7 +34,7 @@ export const ProtectedLayout = () => {
         leftPages={[
           { label: "My Assets", path: "my-assets" },
           { label: "Submit Assets", path: "submit-assets" },
-          { label: "Trade", path: "trade" },
+          { label: "Transfer", path: "transfer" },
         ]}
         rightPages={[
           { label: "Profile", path: "profile" },

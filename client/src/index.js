@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { RouterProvider } from "react-router-dom";
-import { router } from "./App";
+import { App } from "./App";
 import { inject } from "@vercel/analytics";
 
 const rootElement = document.getElementById("root");
@@ -17,7 +17,7 @@ const theme = createTheme({
 root.render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
+      <RouterProvider router={App} />
     </ThemeProvider>
   </StrictMode>
 );

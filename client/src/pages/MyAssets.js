@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
 import HolidayVillageIcon from "@mui/icons-material/HolidayVillage";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -9,6 +11,7 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -16,7 +19,7 @@ export const MyAssetsPage = () => {
   const [user] = useLocalStorage("user", {}); // Access user data stored in local storage
   const [userTokenData, setUserTokenData] = useState([]);
 
-  const getAssets = async () => {
+  const fetchOwnedTokens = async () => {
     try {
       const response = await fetch(`${apiUrl}/asset/my-assets`, {
         method: "POST",
@@ -40,60 +43,74 @@ export const MyAssetsPage = () => {
   };
 
   useEffect(() => {
-    getAssets();
+    fetchOwnedTokens();
   }, [user.linkedWallet]);
 
   const handleRefresh = () => {
-    getAssets();
+    fetchOwnedTokens();
   };
 
   return (
-    <div>
+    <Container component="main" maxWidth="md">
       <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        mt={2} // Add margin to the top
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
       >
-        <Box display="flex" alignItems="center">
+        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
           <HolidayVillageIcon />
-          <Typography variant="h4" component="h2" ml={1}>
-            My Assets
-          </Typography>
-        </Box>
-        <Button variant="contained" color="primary" onClick={handleRefresh}>
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          My Assets
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleRefresh}
+          sx={{ mt: 1, mb: 2 }}
+        >
           Refresh Data
         </Button>
-      </Box>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Token ID</TableCell>
-            <TableCell>Token Name</TableCell>
-            <TableCell>Token Price</TableCell>
-            <TableCell>Balance</TableCell>
-            <TableCell>View</TableCell> {/* New column for the "View" button */}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {userTokenData.map((token) => (
-            <TableRow key={token.id}>
-              <TableCell>{token.id}</TableCell>
-              <TableCell>{token.name}</TableCell>
-              <TableCell>{token.pricePerToken}</TableCell>
-              <TableCell>{token.balance}</TableCell>
-              <TableCell>
-                <Button
-                  variant="contained"
-                  color="primary" // Set color to "primary" to make it filled with the primary color
-                >
-                  View
-                </Button>
-              </TableCell>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Token ID</TableCell>
+              <TableCell>Token Name</TableCell>
+              <TableCell>Token Price</TableCell>
+              <TableCell>Balance</TableCell>
+              <TableCell>View</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          </TableHead>
+          <TableBody>
+            {userTokenData.length > 0 ? (
+              userTokenData.map((token) => (
+                <TableRow key={token.id}>
+                  <TableCell>{token.id}</TableCell>
+                  <TableCell>{token.name}</TableCell>
+                  <TableCell>{token.pricePerToken}</TableCell>
+                  <TableCell>{token.balance}</TableCell>
+                  <TableCell>
+                    <Link to={`/dashboard/my-assets/${token.id}`}>
+                      <Button variant="contained" color="primary">
+                        View
+                      </Button>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No Assets Found
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Box>
+    </Container>
   );
 };
