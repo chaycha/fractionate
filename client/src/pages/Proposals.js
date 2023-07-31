@@ -18,6 +18,7 @@ import { ethers } from "ethers";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import VoteDialog from "../components/VoteDialog";
 import NewProposalDialog from "../components/NewProposalDialog";
+import ExecuteProposalDialog from "../components/ExecuteProposalDialog";
 
 const tokenContractAddress = process.env.REACT_APP_DEPLOYED_TOKEN_ADDRESS;
 const daoContractAddress = process.env.REACT_APP_DEPLOYED_DAO_ADDRESS;
@@ -31,6 +32,7 @@ export const ProposalsPage = () => {
   const [totalTokens, setTotalTokens] = useState(0);
   const [currentBlock, setCurrentBlock] = useState(0);
   const location = useLocation();
+  const [user] = useLocalStorage("user", "");
 
   const searchParams = new URLSearchParams(location.search);
   const tokenName = searchParams.get("name");
@@ -79,7 +81,7 @@ export const ProposalsPage = () => {
             againstVotes: Number(proposal.againstVotes),
             totalTokens: Number(proposal.totalTokens),
             endBlock: Number(proposal.endBlock),
-            executed: proposal.executed.toString(),
+            executed: proposal.executed,
           };
         }
       );
@@ -93,7 +95,7 @@ export const ProposalsPage = () => {
           againstVotes: Number(proposal.againstVotes),
           totalTokens: Number(proposal.totalTokens),
           endBlock: Number(proposal.endBlock),
-          executed: proposal.executed.toString(),
+          executed: proposal.executed,
         };
       });
       setActiveProposals(formattedActiveProposals);
@@ -239,7 +241,6 @@ export const ProposalsPage = () => {
               <TableCell>Description</TableCell>
               <TableCell>For Votes</TableCell>
               <TableCell>Against Votes</TableCell>
-              <TableCell>Total Tokens</TableCell>
               <TableCell>End Block</TableCell>
               <TableCell>Vote</TableCell>
             </TableRow>
@@ -253,7 +254,6 @@ export const ProposalsPage = () => {
                   <TableCell>{proposal.description}</TableCell>
                   <TableCell>{proposal.forVotes}</TableCell>
                   <TableCell>{proposal.againstVotes}</TableCell>
-                  <TableCell>{proposal.totalTokens}</TableCell>
                   <TableCell>{proposal.endBlock}</TableCell>
                   <TableCell>
                     <VoteDialog proposal={proposal} tokenId={tokenId} />
@@ -280,9 +280,8 @@ export const ProposalsPage = () => {
               <TableCell>Description</TableCell>
               <TableCell>For Votes</TableCell>
               <TableCell>Against Votes</TableCell>
-              <TableCell>Total Tokens</TableCell>
               <TableCell>End Block</TableCell>
-              <TableCell>Decision</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -294,9 +293,23 @@ export const ProposalsPage = () => {
                   <TableCell>{proposal.description}</TableCell>
                   <TableCell>{proposal.forVotes}</TableCell>
                   <TableCell>{proposal.againstVotes}</TableCell>
-                  <TableCell>{proposal.totalTokens}</TableCell>
                   <TableCell>{proposal.endBlock}</TableCell>
-                  <TableCell>{proposal.decision}</TableCell>
+                  <TableCell>
+                    {proposal.forVotes <= totalTokens / 2 ? (
+                      "Failed"
+                    ) : proposal.executed ? (
+                      "Executed"
+                    ) : proposal.proposer === user.linkedWallet ? (
+                      <>
+                        Passed
+                        <ExecuteProposalDialog proposal={proposal}>
+                          Execute
+                        </ExecuteProposalDialog>
+                      </>
+                    ) : (
+                      "Passed"
+                    )}
+                  </TableCell>
                 </TableRow>
               ))
             ) : (

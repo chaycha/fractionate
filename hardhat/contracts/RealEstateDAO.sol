@@ -19,13 +19,14 @@ contract RealEstateDAO {
     }
 
     mapping(uint256 => Proposal) public proposals;
+    mapping(uint256 => mapping(address => bool)) public hasVoted;
 
     uint256 public proposalCount = 0;
 
-    // votingDuration is in terms of number of blocks on the blockchain
-    // In Ethereum mainnet, a block is mined every 15 seconds on average
-    // So 100 blocks is roughly 25 minutes
-    uint256 public votingDuration = 100;
+    // votingDuration is in terms of number of blocks on the blockchain.
+    // In Ethereum mainnet, a block is mined every 15 seconds on average.
+    // So 8 blocks is roughly 2 minutes.
+    uint256 public votingDuration = 8;
 
     event ProposalCreated(
         uint256 proposalId,
@@ -79,6 +80,10 @@ contract RealEstateDAO {
 
         require(block.number <= p.endBlock, "Voting period has ended");
         require(!p.executed, "Proposal has been executed");
+        require(
+            !hasVoted[proposalId][msg.sender],
+            "You have already voted on this proposal"
+        );
 
         uint256 weight = tokens.balanceOf(msg.sender, p.tokenId);
 
@@ -89,6 +94,8 @@ contract RealEstateDAO {
         } else {
             p.againstVotes += weight;
         }
+
+        hasVoted[proposalId][msg.sender] = true;
 
         emit Voted(proposalId, msg.sender, decision, weight);
     }
@@ -120,9 +127,10 @@ contract RealEstateDAO {
         }
 
         // Create a new array with the exact length needed
+        // Proposals are now sorted descending by id
         Proposal[] memory activeProposals = new Proposal[](count);
         for (uint256 i = 0; i < count; i++) {
-            activeProposals[i] = tempProposals[i];
+            activeProposals[count - i - 1] = tempProposals[i];
         }
 
         return activeProposals;
@@ -140,9 +148,10 @@ contract RealEstateDAO {
         }
 
         // Create a new array with the exact length needed
+        // Proposals are now sorted descending by id
         Proposal[] memory pastProposals = new Proposal[](count);
         for (uint256 i = 0; i < count; i++) {
-            pastProposals[i] = tempProposals[i];
+            pastProposals[count - i - 1] = tempProposals[i];
         }
 
         return pastProposals;

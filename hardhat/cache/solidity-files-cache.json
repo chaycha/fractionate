@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/neothehero/projects/fractionate/hardhat/contracts/RealEstateDAO.sol": {
-      "lastModificationDate": 1690643004499,
-      "contentHash": "c3de54338d2a9ae7858a86299659a424",
+      "lastModificationDate": 1690801396571,
+      "contentHash": "a37d2bcc97d7a141ffc368cfe6e7b690",
       "sourceName": "contracts/RealEstateDAO.sol",
       "solcConfig": {
         "version": "0.8.19",
