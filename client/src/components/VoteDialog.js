@@ -26,6 +26,7 @@ export default function VoteDialog({ proposal, tokenId }) {
     }
   };
 
+  // TODO: Implement voting logic
   const handleVote = (type) => {
     setVoteType(type);
     setVoted(true);

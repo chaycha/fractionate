@@ -93,7 +93,9 @@ export const MyAssetsPage = () => {
                   <TableCell>{token.pricePerToken}</TableCell>
                   <TableCell>{token.balance}</TableCell>
                   <TableCell>
-                    <Link to={`/dashboard/my-assets/${token.id}`}>
+                    <Link
+                      to={`/dashboard/my-assets/${token.id}?name=${token.name}&balance=${token.balance}`}
+                    >
                       <Button variant="contained" color="primary">
                         View
                       </Button>

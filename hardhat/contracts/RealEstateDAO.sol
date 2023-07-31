@@ -7,11 +7,13 @@ contract RealEstateDAO {
     ERC1155Supply public tokens;
 
     struct Proposal {
+        uint256 id;
         address proposer;
         uint256 tokenId;
         string description;
         uint256 forVotes;
         uint256 againstVotes;
+        uint256 totalTokens;
         uint256 endBlock;
         bool executed;
     }
@@ -46,15 +48,21 @@ contract RealEstateDAO {
             "Must be a token holder to create proposal"
         );
 
-        proposals[proposalCount++] = Proposal({
+        uint256 totalTokens = tokens.totalSupply(tokenId);
+
+        proposals[proposalCount] = Proposal({
+            id: proposalCount,
             proposer: msg.sender,
             tokenId: tokenId,
             description: description,
             forVotes: 0,
             againstVotes: 0,
+            totalTokens: totalTokens,
             endBlock: block.number + votingDuration,
             executed: false
         });
+
+        proposalCount++;
 
         emit ProposalCreated(
             proposalCount - 1,
@@ -91,15 +99,52 @@ contract RealEstateDAO {
         require(block.number > p.endBlock, "Voting period has not ended");
         require(!p.executed, "Proposal has been executed");
 
-        if (
-            p.forVotes > p.againstVotes &&
-            p.forVotes > tokens.totalSupply(p.tokenId) / 2
-        ) {
+        if (p.forVotes > p.againstVotes && p.forVotes > p.totalTokens / 2) {
             p.executed = true;
 
             // Here you can add code to perform whatever action the proposal represents
 
             emit ProposalExecuted(proposalId);
         }
+    }
+
+    function getActiveProposals() public view returns (Proposal[] memory) {
+        Proposal[] memory tempProposals = new Proposal[](proposalCount);
+        uint256 count = 0;
+        for (uint256 i = 0; i < proposalCount; i++) {
+            Proposal storage p = proposals[i];
+            if (!p.executed && block.number <= p.endBlock) {
+                tempProposals[count] = p;
+                count++;
+            }
+        }
+
+        // Create a new array with the exact length needed
+        Proposal[] memory activeProposals = new Proposal[](count);
+        for (uint256 i = 0; i < count; i++) {
+            activeProposals[i] = tempProposals[i];
+        }
+
+        return activeProposals;
+    }
+
+    function getPastProposals() public view returns (Proposal[] memory) {
+        Proposal[] memory tempProposals = new Proposal[](proposalCount);
+        uint256 count = 0;
+        for (uint256 i = 0; i < proposalCount; i++) {
+            Proposal storage p = proposals[i];
+            if (block.number > p.endBlock) {
+                tempProposals[count] = p;
+                count++;
+            }
+        }
+
+        // Create a new array with the exact length needed
+        Proposal[] memory pastProposals = new Proposal[](count);
+        for (uint256 i = 0; i < count; i++) {
+            pastProposals[i] = tempProposals[i];
+        }
+
+        return pastProposals;
     }
 }
