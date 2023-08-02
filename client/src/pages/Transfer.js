@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import Avatar from "@mui/material/Avatar";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
+import Dialog from "@mui/material/Dialog";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -17,18 +19,22 @@ const apiUrl = process.env.REACT_APP_API_URL;
 const tokenContractAddress = process.env.REACT_APP_DEPLOYED_TOKEN_ADDRESS;
 
 export const TransferPage = () => {
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState("success");
   const [token, setToken] = useState("");
   const [amount, setAmount] = useState("");
   const [receiver, setReceiver] = useState("");
   const [ownedTokenList, setOwnedTokenList] = useState([]);
   const [user] = useLocalStorage("user", {});
 
+  const handleAlertClose = () => {
+    setAlertOpen(false);
+  };
+
   const handleTransfer = (event) => {
     event.preventDefault();
     transfer(receiver, token, amount);
-    setToken("");
-    setAmount("");
-    setReceiver("");
   };
 
   const transfer = async (receiverAddress, tokenId, amount) => {
@@ -69,12 +75,17 @@ export const TransferPage = () => {
       console.log(
         `Transfer request for ${amount} tokens of id ${tokenId} from ${senderAddress} to ${receiverAddress} is sent.`
       );
-      alert(
-        "Request for transfer is sent. Please approve the transaction in Metamask popup."
-      );
+      setToken("");
+      setAmount("");
+      setReceiver("");
+      setAlertMessage(`Transfer ${amount} tokens successfully.`);
+      setAlertSeverity("success");
+      setAlertOpen(true);
     } catch (error) {
       console.log("Transfer failed", error);
-      alert("Transfer failed");
+      setAlertMessage(`Transfer failed`);
+      setAlertSeverity("error");
+      setAlertOpen(true);
     }
   };
 
@@ -195,6 +206,11 @@ export const TransferPage = () => {
           </Box>
         </Box>
       </Box>
+      <Dialog open={alertOpen} onClose={handleAlertClose}>
+        <Alert onClose={handleAlertClose} severity={alertSeverity}>
+          {alertMessage}
+        </Alert>
+      </Dialog>
     </Container>
   );
 };

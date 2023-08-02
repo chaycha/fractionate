@@ -1,16 +1,16 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import { Link as RouterLink } from "react-router-dom";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Grid,
+  Link,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
-import { useState } from "react";
 
 export const LoginPage = () => {
   const { login } = useAuth();
@@ -22,38 +22,6 @@ export const LoginPage = () => {
       email: data.get("email"),
       password: data.get("password"),
     });
-    connectWallet();
-  };
-
-  const [selectedAddress, setSelectedAddress] = useState();
-  // Need to change to sepoia network id
-  const HARDHAT_NETWORK_ID = `0xaa36a7`;
-
-  const connectWallet = async () => {
-    // To connect to the user's wallet, we have to run this method.
-    // It returns a promise that will resolve to the user's address.
-    const [obtainedAddress] = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
-
-    /*
-    // Check the network
-    if (window.ethereum.networkVersion !== HARDHAT_NETWORK_ID) {
-      switchChain();
-    }
-
-    const switchChain = async () => {
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: HARDHAT_NETWORK_ID }],
-      });
-    };
-    */
-
-    // We can then use selectedAddress in our application
-    setSelectedAddress(obtainedAddress);
-
-    console.log("Connected to wallet");
   };
 
   /* unused code for refresh token

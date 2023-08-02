@@ -59,6 +59,7 @@ router.post("/new-asset", async (req, res) => {
     const pricePerToken = Math.floor(
       (assetPrice * process.env.MULTIPLIER) / process.env.TOKEN_AMOUNT
     );
+
     // connect to admin (who will pay for minting fee) before minting
     await contract
       .connect(fractionateAdmin)

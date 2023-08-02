@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
 import HolidayVillageIcon from "@mui/icons-material/HolidayVillage";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { formatWithCommas, formatWithSepoliaETH } from "../utils/numberUtils";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -77,11 +80,11 @@ export const MyAssetsPage = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Token ID</TableCell>
-              <TableCell>Token Name</TableCell>
+              <TableCell>Asset ID</TableCell>
+              <TableCell>Asset Name</TableCell>
               <TableCell>Token Price</TableCell>
               <TableCell>Balance</TableCell>
-              <TableCell>View</TableCell>
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -90,8 +93,10 @@ export const MyAssetsPage = () => {
                 <TableRow key={token.id}>
                   <TableCell>{token.id}</TableCell>
                   <TableCell>{token.name}</TableCell>
-                  <TableCell>{token.pricePerToken}</TableCell>
-                  <TableCell>{token.balance}</TableCell>
+                  <TableCell>
+                    {formatWithSepoliaETH(token.pricePerToken)}
+                  </TableCell>
+                  <TableCell>{formatWithCommas(token.balance)}</TableCell>
                   <TableCell>
                     <Link
                       to={`/dashboard/my-assets/${token.id}?name=${token.name}&balance=${token.balance}`}

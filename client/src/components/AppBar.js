@@ -24,6 +24,7 @@ export const AppBar = ({ leftPages, rightPages }) => {
 
   const handleCloseNavMenu = (path) => {
     setAnchorElNav(null);
+    console.log(path);
     if (path) {
       navigate(path);
     }
@@ -72,7 +73,7 @@ export const AppBar = ({ leftPages, rightPages }) => {
                 horizontal: "left",
               }}
               open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
+              onClose={() => setAnchorElNav(null)}
               sx={{
                 display: { xs: "block", md: "none" },
               }}
@@ -88,7 +89,7 @@ export const AppBar = ({ leftPages, rightPages }) => {
 
               {!!user && (
                 <MenuItem key={"logout"} onClick={logout}>
-                  <Typography textAlign="center">Logout</Typography>
+                  <Typography textAlign="center">Log Out</Typography>
                 </MenuItem>
               )}
             </Menu>
@@ -142,7 +143,7 @@ export const AppBar = ({ leftPages, rightPages }) => {
                 onClick={logout}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {"logout"}
+                {"log out"}
               </Button>
             )}
           </Box>

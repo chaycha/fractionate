@@ -1,24 +1,49 @@
-import * as React from "react";
+import { useState } from "react";
 import PublishIcon from "@mui/icons-material/Publish";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Dialog,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { ethers } from "ethers";
 
 const apiUrl = process.env.REACT_APP_API_URL;
+const tokenContractAddress = process.env.REACT_APP_DEPLOYED_TOKEN_ADDRESS;
 
 export const SubmitAssetsPage = () => {
   const [user] = useLocalStorage("user", {}); // Access user data stored in local storage
-  const handleSubmitAsset = async (event) => {
+  const [assetName, setAssetName] = useState("");
+  const [assetPrice, setAssetPrice] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState("success"); // new state variable
+
+  const handleSubmitAsset = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const assetName = data.get("name");
-    const assetPrice = data.get("price");
-    // send HTTP request to hardhat server to create new token
-    try {
+
+    if (!assetName) {
+      setAlertMessage("Asset Name is required");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      return;
+    }
+
+    if (!assetPrice) {
+      setAlertMessage("Asset Price is required");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      return;
+    }
+
+    submitAsset(assetName, assetPrice);
+    //try {
+    /*
       const response = await fetch(`${apiUrl}/asset/new-asset`, {
         method: "POST",
         credentials: "include",
@@ -35,12 +60,69 @@ export const SubmitAssetsPage = () => {
       if (!response.ok) {
         throw new Error(receivedResponse.message);
       }
-      console.log(receivedResponse);
-      console.log("Tokenise asset successfully:", receivedResponse);
-      alert(`Tokenise asset ${receivedResponse.token} successfully`);
+      */
+  };
+
+  const submitAsset = async (assetName, assetPrice) => {
+    //try {
+    const metamaskProvider = new ethers.BrowserProvider(window.ethereum);
+
+    const signer = await metamaskProvider.getSigner();
+
+    const contract = new ethers.Contract(
+      tokenContractAddress,
+      [
+        "function mintNew(string memory name, uint256 totalSupply, uint256 pricePerToken, address account) public",
+      ],
+      metamaskProvider
+    );
+    if (!contract) {
+      console.log("Could not get contract");
+      return;
+    }
+
+    const pricePerToken = Math.floor(
+      (assetPrice * process.env.REACT_APP_MULTIPLIER) /
+        process.env.REACT_APP_TOKEN_AMOUNT
+    );
+    console.log(contract);
+    console.log(
+      assetName,
+      process.env.REACT_APP_TOKEN_AMOUNT,
+      pricePerToken,
+      user.linkedWallet
+    );
+    await contract
+      .connect(signer)
+      .mintNew(
+        assetName,
+        process.env.REACT_APP_TOKEN_AMOUNT,
+        pricePerToken,
+        user.linkedWallet
+      );
+    console.log(`Tokenise ${assetName} successfully`);
+    setAlertMessage(`Tokenise ${assetName} successfully`);
+    setAlertSeverity("success");
+    setAlertOpen(true);
+
+    // Clear the form fields
+    setAssetName("");
+    setAssetPrice("");
+    /*
     } catch (err) {
       console.error(err.message);
+      setAlertMessage(`Tokenise asset failed`);
+      setAlertSeverity("error");
+      setAlertOpen(true);
     }
+    */
+  };
+
+  const handleAlertClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setAlertOpen(false);
   };
 
   return (
@@ -73,6 +155,8 @@ export const SubmitAssetsPage = () => {
             label="Asset Name"
             name="name"
             autoFocus
+            value={assetName}
+            onChange={(e) => setAssetName(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -81,6 +165,9 @@ export const SubmitAssetsPage = () => {
             name="price"
             label="Asset Price"
             id="price"
+            inputProps={{ type: "number", pattern: "[1-9][0-9]*" }}
+            value={assetPrice}
+            onChange={(e) => setAssetPrice(e.target.value)}
           />
           <Button
             type="submit"
@@ -92,6 +179,15 @@ export const SubmitAssetsPage = () => {
           </Button>
         </Box>
       </Box>
+      <Dialog open={alertOpen} onClose={handleAlertClose}>
+        <Alert
+          onClose={handleAlertClose}
+          severity={alertSeverity}
+          sx={{ mb: 0 }}
+        >
+          {alertMessage}
+        </Alert>
+      </Dialog>
     </Container>
   );
 };

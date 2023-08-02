@@ -32,6 +32,43 @@ export const AuthProvider = ({ children, userData }) => {
           return;
         }
         const receivedResponse = await response.json();
+
+        // The code below enforce the "1 user - 1 wallet - Sepolia only" policy
+        // Sepolia testnet details
+        const sepolia = {
+          chainId: "0xaa36a7",
+          chainName: "Sepolia (Fractionate)",
+          nativeCurrency: {
+            name: "SepoliaETH",
+            symbol: "ETH",
+            decimals: 18,
+          },
+          rpcUrls: [process.env.REACT_APP_SEPOLIA_RPC_URL],
+          blockExplorerUrls: ["https://sepolia.etherscan.io"],
+        };
+        // Check if the current network is Sepolia
+        const currentChainId = await window.ethereum.request({
+          method: "eth_chainId",
+        });
+        if (currentChainId.toLowerCase() !== sepolia.chainId) {
+          // If not, add and switch to Sepolia network
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [sepolia],
+          });
+        }
+        // Connect to metamask, and check if the wallet address matches the one used to register
+        const [obtainedAddress] = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        // If current metamask address does not match the one used to register, not allowed to log in.
+        if (receivedResponse.linkedWallet.toLowerCase() !== obtainedAddress) {
+          alert(
+            "Wallet address does not match. Please switch to the Metamask wallet used to registered with Fractionate before logging in again."
+          );
+          return;
+        }
+
         console.log("Logged in successfully:", receivedResponse);
         navigate("/dashboard/my-assets", { replace: true });
         setUser({
@@ -91,10 +128,8 @@ export const AuthProvider = ({ children, userData }) => {
         }
         const receivedResponse = await response.json();
         console.log("Sign up successfully", receivedResponse);
-        alert(
-          "Sign up successful. You will now be redirected to your profile page."
-        );
-        navigate("/dashboard/profile", { replace: true });
+        alert("Signed up successfully.");
+        navigate("/dashboard/my-assets", { replace: true });
         setUser({
           email: receivedResponse.email,
           linkedWallet: receivedResponse.linkedWallet,

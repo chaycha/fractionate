@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
-import Avatar from "@mui/material/Avatar";
-import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { ethers } from "ethers";
@@ -19,6 +21,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import VoteDialog from "../components/VoteDialog";
 import NewProposalDialog from "../components/NewProposalDialog";
 import ExecuteProposalDialog from "../components/ExecuteProposalDialog";
+import { formatWithCommas } from "../utils/numberUtils";
 
 const tokenContractAddress = process.env.REACT_APP_DEPLOYED_TOKEN_ADDRESS;
 const daoContractAddress = process.env.REACT_APP_DEPLOYED_DAO_ADDRESS;
@@ -50,8 +53,8 @@ export const ProposalsPage = () => {
       const contract = new ethers.Contract(
         daoContractAddress,
         [
-          "function getActiveProposals() public view returns (tuple(uint256 id, address proposer, uint256 tokenId, string description, uint256 forVotes, uint256 againstVotes, uint256 totalTokens, uint256 endBlock, bool executed)[] memory)",
-          "function getPastProposals() public view returns (tuple(uint256 id, address proposer, uint256 tokenId, string description, uint256 forVotes, uint256 againstVotes, uint256 totalTokens, uint256 endBlock, bool executed)[] memory)",
+          "function getActiveProposals() public view returns (tuple(uint256 id, address proposer, uint256 tokenId, string description, uint256 forVotes, uint256 againstVotes, uint256 totalTokens, uint256 endBlock, bool executed, uint256 proposalType, address tenant, uint256 rent)[] memory)",
+          "function getPastProposals() public view returns (tuple(uint256 id, address proposer, uint256 tokenId, string description, uint256 forVotes, uint256 againstVotes, uint256 totalTokens, uint256 endBlock, bool executed, uint256 proposalType, address tenant, uint256 rent)[] memory)",
         ],
         metamaskProvider
       );
@@ -82,6 +85,10 @@ export const ProposalsPage = () => {
             totalTokens: Number(proposal.totalTokens),
             endBlock: Number(proposal.endBlock),
             executed: proposal.executed,
+            proposalType:
+              Number(proposal.proposalType) == 0 ? "Regular" : "Rent",
+            tenant: proposal.tenant,
+            rent: ethers.formatEther(proposal.rent),
           };
         }
       );
@@ -96,8 +103,13 @@ export const ProposalsPage = () => {
           totalTokens: Number(proposal.totalTokens),
           endBlock: Number(proposal.endBlock),
           executed: proposal.executed,
+          proposalType: Number(proposal.proposalType) == 0 ? "Regular" : "Rent",
+          tenant: proposal.tenant,
+          rent: ethers.formatEther(proposal.rent),
         };
       });
+      console.log(formattedActiveProposals);
+      console.log(formattedPastProposals);
       setActiveProposals(formattedActiveProposals);
       setPastProposals(formattedPastProposals);
       console.log(
@@ -214,19 +226,23 @@ export const ProposalsPage = () => {
         <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography>Id: {tokenId}</Typography>
+              <Typography>Asset ID: {tokenId}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography>Name: {tokenName}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography>Balance: {tokenBalance}</Typography>
+              <Typography>Balance: {formatWithCommas(tokenBalance)}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography>Total Tokens: {totalTokens}</Typography>
+              <Typography>
+                Total Tokens: {formatWithCommas(totalTokens)}
+              </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography>Current Block: {currentBlock}</Typography>
+              <Typography>
+                Current Block: {formatWithCommas(currentBlock)}
+              </Typography>
             </Grid>
           </Grid>
         </Paper>
@@ -236,8 +252,11 @@ export const ProposalsPage = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
+              <TableCell>Proposal ID</TableCell>
               <TableCell>Proposer</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Tenant</TableCell>
+              <TableCell>Rent</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>For Votes</TableCell>
               <TableCell>Against Votes</TableCell>
@@ -251,10 +270,15 @@ export const ProposalsPage = () => {
                 <TableRow key={proposal.id}>
                   <TableCell>{proposal.id}</TableCell>
                   <TableCell>{proposal.proposer}</TableCell>
+                  <TableCell>{proposal.proposalType}</TableCell>
+                  <TableCell>{proposal.tenant}</TableCell>
+                  <TableCell>{proposal.rent}</TableCell>
                   <TableCell>{proposal.description}</TableCell>
-                  <TableCell>{proposal.forVotes}</TableCell>
-                  <TableCell>{proposal.againstVotes}</TableCell>
-                  <TableCell>{proposal.endBlock}</TableCell>
+                  <TableCell>{formatWithCommas(proposal.forVotes)}</TableCell>
+                  <TableCell>
+                    {formatWithCommas(proposal.againstVotes)}
+                  </TableCell>
+                  <TableCell>{formatWithCommas(proposal.endBlock)}</TableCell>
                   <TableCell>
                     <VoteDialog proposal={proposal} tokenId={tokenId} />
                   </TableCell>
@@ -262,7 +286,7 @@ export const ProposalsPage = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={11} align="center">
                   No active proposals
                 </TableCell>
               </TableRow>
@@ -275,8 +299,11 @@ export const ProposalsPage = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
+              <TableCell>Proposal ID</TableCell>
               <TableCell>Proposer</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Tenant</TableCell>
+              <TableCell>Rent</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>For Votes</TableCell>
               <TableCell>Against Votes</TableCell>
@@ -290,16 +317,24 @@ export const ProposalsPage = () => {
                 <TableRow key={proposal.id}>
                   <TableCell>{proposal.id}</TableCell>
                   <TableCell>{proposal.proposer}</TableCell>
+                  <TableCell>{proposal.proposalType}</TableCell>
+                  <TableCell>{proposal.tenant}</TableCell>
+                  <TableCell>{proposal.rent}</TableCell>
                   <TableCell>{proposal.description}</TableCell>
-                  <TableCell>{proposal.forVotes}</TableCell>
-                  <TableCell>{proposal.againstVotes}</TableCell>
-                  <TableCell>{proposal.endBlock}</TableCell>
+                  <TableCell>{formatWithCommas(proposal.forVotes)}</TableCell>
+                  <TableCell>
+                    {formatWithCommas(proposal.againstVotes)}
+                  </TableCell>
+                  <TableCell>{formatWithCommas(proposal.endBlock)}</TableCell>
                   <TableCell>
                     {proposal.forVotes <= totalTokens / 2 ? (
                       "Failed"
                     ) : proposal.executed ? (
                       "Executed"
-                    ) : proposal.proposer === user.linkedWallet ? (
+                    ) : (proposal.proposalType === "Regular" &&
+                        proposal.proposer === user.linkedWallet) ||
+                      (proposal.proposalType == "Rent" &&
+                        proposal.tenant === user.linkedWallet) ? (
                       <>
                         Passed
                         <ExecuteProposalDialog proposal={proposal}>
@@ -314,7 +349,7 @@ export const ProposalsPage = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={11} align="center">
                   No past proposals
                 </TableCell>
               </TableRow>

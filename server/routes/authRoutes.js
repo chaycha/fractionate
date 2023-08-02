@@ -4,7 +4,7 @@ const router = express.Router();
 const pool = require("./db");
 const jwt = require("jsonwebtoken");
 const cookieparser = require("cookie-parser");
-const { db, sql } = require("@vercel/postgres");
+const { sql } = require("@vercel/postgres");
 
 // use middleware;
 router.use(cookieparser());
@@ -22,6 +22,31 @@ function authenticateToken(req, res, next) {
     req.user = user;
     next();
   });
+}
+
+// function to generate tokens
+async function generateTokens(email, res) {
+  const accessToken = jwt.sign(
+    { email: email },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "30s" }
+  );
+  const refreshToken = jwt.sign(
+    { email: email },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: "20m" }
+  );
+
+  res.cookie("jwt", refreshToken, {
+    httpOnly: true,
+    sameSite: "None",
+    secure: true,
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  });
+
+  console.log("Sign in successfully");
+
+  return { accessToken: accessToken, refreshToken: refreshToken };
 }
 
 //ROUTES//
@@ -44,8 +69,11 @@ router.post("/signup", async (req, res) => {
     const newUser =
       await sql`INSERT INTO user_list (name, email, password, linked_wallet) VALUES(${name}, ${email}, ${password}, ${walletAddress}) RETURNING *;`;
 
-    res.json(newUser.rows[0]);
     console.log("New user created");
+
+    const tokens = await generateTokens(email, res);
+
+    res.json({ ...tokens, email: email, linkedWallet: walletAddress });
   } catch (err) {
     console.error(err.message);
   }
@@ -70,29 +98,10 @@ router.post("/login", async (req, res) => {
     // If the email and password are correct, then matchedUsers.rows.length = 1
     // Otherwise, matchedUsers.rows.length = 0
     if (matchedUsers.rows.length === 1) {
-      const accessToken = jwt.sign(
-        { email: email },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "30s" }
-      );
-      const refreshToken = jwt.sign(
-        { email: email },
-        process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "20m" }
-      );
+      const tokens = await generateTokens(email, res);
 
-      // Assigning refresh token in http-only cookie
-      res.cookie("jwt", refreshToken, {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
-      });
-
-      console.log("Sign in successfully");
       return res.json({
-        accessToken: accessToken,
-        refreshToken: refreshToken,
+        ...tokens,
         email: matchedUsers.rows[0].email,
         linkedWallet: matchedUsers.rows[0].linked_wallet,
       });

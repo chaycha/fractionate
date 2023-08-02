@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Alert from "@mui/material/Alert";
+import {
+  Alert,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { ethers } from "ethers";
 
 const daoContractAddress = process.env.REACT_APP_DEPLOYED_DAO_ADDRESS;
 
 export default function VoteDialog({ proposal, tokenId }) {
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState("success");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [voted, setVoted] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
   const [voteType, setVoteType] = useState("");
-  const navigate = useNavigate();
 
   const handleClickOpen = () => {
     if (voted) {
@@ -26,17 +28,9 @@ export default function VoteDialog({ proposal, tokenId }) {
     }
   };
 
-  const handleClose = () => {
-    setDialogOpen(false);
-  };
-
-  // TODO: Implement voting logic
   const handleVote = (type) => {
     vote(type);
     setVoteType(type);
-    setVoted(true);
-    setAlertOpen(true);
-    setDialogOpen(false);
   };
 
   const vote = async (type) => {
@@ -65,16 +59,23 @@ export default function VoteDialog({ proposal, tokenId }) {
       const decision = type === "for";
       await contract.connect(signer).vote(proposal.id, decision);
       console.log(`Voted ${type} proposal ${proposal.id} successfully`);
-      handleClose();
+      setVoted(true);
+      setAlertMessage(`Voted ${type} proposal ${proposal.id} successfully`);
+      setAlertSeverity("success");
+      setAlertOpen(true);
+      setDialogOpen(false);
     } catch (error) {
       console.log(`Error voting on proposal ${proposal.id}`, error);
-      alert("Error creating proposal");
+      setAlertMessage(`Error voting on proposal ${proposal.id}`);
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      setDialogOpen(false);
     }
   };
 
   const handleAlertClose = () => {
     setAlertOpen(false);
-    navigate(`/dashboard/my-assets/${tokenId}`);
+    //navigate(`/dashboard/my-assets/${tokenId}`); // TODO: use search params on this
   };
 
   useEffect(() => {
@@ -126,7 +127,12 @@ export default function VoteDialog({ proposal, tokenId }) {
       >
         {voted ? "Voted" : "Vote"}
       </Button>
-      <Dialog open={dialogOpen} onClose={handleClose}>
+      <Dialog
+        open={dialogOpen}
+        onClose={() => {
+          setDialogOpen(false);
+        }}
+      >
         <DialogTitle>Vote on Proposal</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -137,12 +143,18 @@ export default function VoteDialog({ proposal, tokenId }) {
         <DialogActions>
           <Button onClick={() => handleVote("for")}>For</Button>
           <Button onClick={() => handleVote("against")}>Against</Button>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button
+            onClick={() => {
+              setDialogOpen(false);
+            }}
+          >
+            Cancel
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={alertOpen} onClose={handleAlertClose}>
-        <Alert onClose={handleAlertClose} severity="success" sx={{ mb: 2 }}>
-          Voted {voteType} proposal {proposal.id} successfully
+        <Alert onClose={handleAlertClose} severity={alertSeverity}>
+          {alertMessage}
         </Alert>
       </Dialog>
     </div>

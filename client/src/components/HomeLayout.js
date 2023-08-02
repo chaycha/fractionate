@@ -13,12 +13,11 @@ export const HomeLayout = () => {
   return (
     <div>
       <AppBar
-        leftPages={[
-          { label: "Home", path: "/" },
-          { label: "Login", path: "/login" },
+        leftPages={[{ label: "Home", path: "/" }]}
+        rightPages={[
+          { label: "Log In", path: "/login" },
           { label: "Sign Up", path: "/signup" },
         ]}
-        rightPages={[]} // no right pages
       />
       {outlet}
     </div>

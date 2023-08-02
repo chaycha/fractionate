@@ -1,18 +1,22 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import {
+  Alert,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { ethers } from "ethers";
 
 const daoContractAddress = process.env.REACT_APP_DEPLOYED_DAO_ADDRESS;
 
 export default function ExecuteProposalDialog({ proposal }) {
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState("success");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const navigate = useNavigate();
 
   const handleOpen = () => {
     setDialogOpen(true);
@@ -24,7 +28,10 @@ export default function ExecuteProposalDialog({ proposal }) {
 
   const handleExecute = () => {
     executeProposal();
-    handleClose();
+  };
+
+  const handleAlertClose = () => {
+    setAlertOpen(false);
   };
 
   const executeProposal = async () => {
@@ -38,7 +45,7 @@ export default function ExecuteProposalDialog({ proposal }) {
       // Retrieve a contract instance using contract address, ABI, and provider
       const contract = new ethers.Contract(
         daoContractAddress,
-        ["function executeProposal(uint256 proposalId) public"],
+        ["function executeProposal(uint256 proposalId) public payable"],
         metamaskProvider
       );
       // if error could not get contract
@@ -47,14 +54,27 @@ export default function ExecuteProposalDialog({ proposal }) {
         return;
       }
 
+      const attachedValue =
+        proposal.proposalType === "Rent"
+          ? ethers.parseEther(proposal.rent)
+          : ethers.parseEther("0");
       // create the proposal
       // note that the connect() function is NECESSARY here, without it you'll get an error "Contract runner does not support sending transactions"
       // when this line is executed, a metamask popup will appear asking for your confirmation to sign the transaction
-      await contract.connect(signer).executeProposal(proposal.id);
+      await contract
+        .connect(signer)
+        .executeProposal(proposal.id, { value: attachedValue });
       console.log(`Executed proposal ${proposal.id}`);
+      setAlertMessage(`Executed proposal ${proposal.id}`);
+      setAlertSeverity("success");
+      setAlertOpen(true);
+      setDialogOpen(false);
     } catch (error) {
       console.log(`Error executing proposal ${proposal.id}`, error);
-      alert("Error executing proposal");
+      setAlertMessage(`Error executing proposal ${proposal.id}`);
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      setDialogOpen(false);
     }
   };
 
@@ -75,6 +95,11 @@ export default function ExecuteProposalDialog({ proposal }) {
           <Button onClick={handleExecute}>Execute</Button>
           <Button onClick={handleClose}>Cancel</Button>
         </DialogActions>
+      </Dialog>
+      <Dialog open={alertOpen} onClose={handleAlertClose}>
+        <Alert onClose={handleAlertClose} severity={alertSeverity}>
+          {alertMessage}
+        </Alert>
       </Dialog>
     </div>
   );
