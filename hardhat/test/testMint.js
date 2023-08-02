@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const hre = require("hardhat");
 
-const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const contractAddress = "0x1D5a54874C55105E1e12240b9838Ed8358f3893D";
 const address0 = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 const address1 = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
 const address2 = "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC";
@@ -12,13 +12,12 @@ const address2 = "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC";
 
 describe("Test Minting", function () {
   it("Should be able to mint new token", async function () {
-    const contract = await hre.ethers.getContractAt(
-      "RealEstateTokens",
-      contractAddress
-    );
-    const balanceBefore = await contract.balanceOf(address2, 5);
-    await contract.mint(address2, 5, 109, "0x"); // "0x" here is a DataHexString (just put there to avoid error), which satisfies the "bytes" type in the mint function
-    const balanceAfter = await contract.balanceOf(address2, 5);
-    expect(balanceAfter).to.equal(balanceBefore + 109n);
+    const [owner] = await ethers.getSigners();
+
+    const contract = await ethers.deployContract("RealEstateTokens");
+
+    await contract.mintNew("HA", 5, 10200, address2);
+    const balanceAfter = await contract.balanceOf(address2, 0);
+    expect(balanceAfter).to.equal(5n);
   });
 });

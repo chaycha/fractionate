@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/neothehero/projects/fractionate/hardhat/contracts/RealEstateDAO.sol": {
-      "lastModificationDate": 1690801396571,
-      "contentHash": "a37d2bcc97d7a141ffc368cfe6e7b690",
+      "lastModificationDate": 1690971735396,
+      "contentHash": "b77607af6c4ea624cc6bee1562baa25d",
       "sourceName": "contracts/RealEstateDAO.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -29,7 +29,7 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol"
+        "./RealEstateTokens.sol"
       ],
       "versionPragmas": [
         "^0.8.9"
@@ -554,8 +554,8 @@
       ]
     },
     "/home/neothehero/projects/fractionate/hardhat/contracts/RealEstateTokens.sol": {
-      "lastModificationDate": 1690355131159,
-      "contentHash": "ae866a974f3dfc1db2b4d3ffef1cd3a0",
+      "lastModificationDate": 1690978356086,
+      "contentHash": "8e8be68edfe6ce86fde89a86a03fbe73",
       "sourceName": "contracts/RealEstateTokens.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -582,7 +582,6 @@
       },
       "imports": [
         "@openzeppelin/contracts/token/ERC1155/ERC1155.sol",
-        "@openzeppelin/contracts/access/AccessControl.sol",
         "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol"
       ],
       "versionPragmas": [

@@ -1,10 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
+import "./RealEstateTokens.sol";
 
 contract RealEstateDAO {
-    ERC1155Supply public tokens;
+    RealEstateTokens public tokens;
+
+    enum ProposalType {
+        Regular,
+        Rent
+    }
 
     struct Proposal {
         uint256 id;
@@ -16,6 +21,9 @@ contract RealEstateDAO {
         uint256 totalTokens;
         uint256 endBlock;
         bool executed;
+        ProposalType proposalType;
+        address tenant;
+        uint256 rent;
     }
 
     mapping(uint256 => Proposal) public proposals;
@@ -38,8 +46,8 @@ contract RealEstateDAO {
     event Voted(uint256 proposalId, address voter, bool vote, uint256 weight);
     event ProposalExecuted(uint256 proposalId);
 
-    constructor(ERC1155Supply _tokens) {
-        tokens = _tokens;
+    constructor(RealEstateTokens _tokenContract) {
+        tokens = _tokenContract;
     }
 
     // Used by proposer to create new proposal
@@ -60,7 +68,49 @@ contract RealEstateDAO {
             againstVotes: 0,
             totalTokens: totalTokens,
             endBlock: block.number + votingDuration,
-            executed: false
+            executed: false,
+            proposalType: ProposalType.Regular,
+            tenant: address(0),
+            rent: 0
+        });
+
+        proposalCount++;
+
+        emit ProposalCreated(
+            proposalCount - 1,
+            msg.sender,
+            tokenId,
+            description,
+            block.number + votingDuration
+        );
+    }
+
+    function createRentProposal(
+        uint256 tokenId,
+        string memory description,
+        address tenant,
+        uint256 rent
+    ) public {
+        require(
+            tokens.balanceOf(msg.sender, tokenId) > 0,
+            "Must be a token holder to create proposal"
+        );
+
+        uint256 totalTokens = tokens.totalSupply(tokenId);
+
+        proposals[proposalCount] = Proposal({
+            id: proposalCount,
+            proposer: msg.sender,
+            tokenId: tokenId,
+            description: description,
+            forVotes: 0,
+            againstVotes: 0,
+            totalTokens: totalTokens,
+            endBlock: block.number + votingDuration,
+            executed: false,
+            proposalType: ProposalType.Rent,
+            tenant: tenant,
+            rent: rent
         });
 
         proposalCount++;
@@ -100,17 +150,39 @@ contract RealEstateDAO {
         emit Voted(proposalId, msg.sender, decision, weight);
     }
 
-    function executeProposal(uint256 proposalId) public {
+    function executeProposal(uint256 proposalId) public payable {
         Proposal storage p = proposals[proposalId];
-
+        if (p.proposalType == ProposalType.Rent) {
+            require(
+                msg.sender == p.tenant,
+                "Only the tenant can execute this proposal"
+            );
+        }
         require(block.number > p.endBlock, "Voting period has not ended");
         require(!p.executed, "Proposal has been executed");
 
         if (p.forVotes > p.againstVotes && p.forVotes > p.totalTokens / 2) {
             p.executed = true;
 
-            // Here you can add code to perform whatever action the proposal represents
-
+            // For Rent proposal, the tenant must send the rent amount to the DAO contract
+            // and it will be distributed proportionally to token holders
+            if (p.proposalType == ProposalType.Rent) {
+                require(msg.value == p.rent, "Rent amount is incorrect");
+                uint256 numTokenHolders = tokens.getTokenHoldersLength(
+                    p.tokenId
+                );
+                // Distribute the rent to the token holders
+                for (uint256 i = 0; i < numTokenHolders; i++) {
+                    address payable holder = payable(
+                        tokens.tokenHolders(p.tokenId, i)
+                    ); // Replace with the actual address of the token holder
+                    uint256 holderBalance = tokens.balanceOf(holder, p.tokenId);
+                    uint256 holderShare = (p.rent * holderBalance) /
+                        p.totalTokens;
+                    // Transfer SepoliaETH to the token holder
+                    holder.transfer(holderShare);
+                }
+            }
             emit ProposalExecuted(proposalId);
         }
     }
