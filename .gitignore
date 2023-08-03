@@ -1,7 +1,14 @@
 # Ignore Node.js dependencies
 node_modules/
 npm-debug.log
+yarn-debug.log*
 yarn-error.log
+
+# Runtime data
+.pids
+*.pid
+*.seed
+*.log
 
 # Ignore production build artifacts
 /build/
@@ -20,6 +27,9 @@ logs/
 
 # Ignore generated files
 coverage/
+coverage.json
+typechain
+typechain-types
 
 # Ignore user-specific files
 .DS_Store
@@ -34,3 +44,8 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Hardhat files
+cache
+artifacts
+.vercel
