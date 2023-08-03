@@ -1,6 +1,6 @@
-// Scripts for deploying both RealEstateTokens and RealEstateDAO
+// Scripts for deploying BOTH RealEstateTokens and RealEstateDAO
 // To specify network, use --network flag when running the script
-// IMPORTANT: After each re-deployment, update both contract addresses in client/.env and server/.env
+// IMPORTANT: After each re-deployment, note down both contract addresses and update them in client/.env
 const hre = require("hardhat");
 async function main() {
   const [deployer] = await hre.ethers.getSigners();

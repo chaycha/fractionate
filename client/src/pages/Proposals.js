@@ -21,10 +21,8 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import VoteDialog from "../components/VoteDialog";
 import NewProposalDialog from "../components/NewProposalDialog";
 import ExecuteProposalDialog from "../components/ExecuteProposalDialog";
-import { formatWithCommas } from "../utils/numberUtils";
-
-const tokenContractAddress = process.env.REACT_APP_DEPLOYED_TOKEN_ADDRESS;
-const daoContractAddress = process.env.REACT_APP_DEPLOYED_DAO_ADDRESS;
+import { formatWithCommas, formatWithSepoliaETH } from "../utils/numberUtils";
+import { getTokenContract, getDaoContract } from "../utils/contractUtils";
 
 export const ProposalsPage = () => {
   const { tokenId } = useParams();
@@ -43,36 +41,12 @@ export const ProposalsPage = () => {
 
   const fetchProposals = async () => {
     try {
-      // Provider to connect to Sepolia testnet from Metamask
-      const metamaskProvider = new ethers.BrowserProvider(window.ethereum);
-
-      // Get signer from metamask, assume it is already connected
-      const signer = await metamaskProvider.getSigner();
-
-      // Retrieve a contract instance using contract address, ABI, and provider
-      const contract = new ethers.Contract(
-        daoContractAddress,
-        [
-          "function getActiveProposals() public view returns (tuple(uint256 id, address proposer, uint256 tokenId, string description, uint256 forVotes, uint256 againstVotes, uint256 totalTokens, uint256 endBlock, bool executed, uint256 proposalType, address tenant, uint256 rent)[] memory)",
-          "function getPastProposals() public view returns (tuple(uint256 id, address proposer, uint256 tokenId, string description, uint256 forVotes, uint256 againstVotes, uint256 totalTokens, uint256 endBlock, bool executed, uint256 proposalType, address tenant, uint256 rent)[] memory)",
-        ],
-        metamaskProvider
-      );
-      // if error could not get contract
-      if (!contract) {
-        console.log("Could not get contract");
-        return;
-      }
-
-      // create the proposal
-      // note that the connect() function is NECESSARY here, without it you'll get an error "Contract runner does not support sending transactions"
-      // when this line is executed, a metamask popup will appear asking for your confirmation to sign the transaction
-      const retrievedActiveProposals = await contract
-        .connect(signer)
-        .getActiveProposals();
-      const retrievedPastProposals = await contract
-        .connect(signer)
-        .getPastProposals();
+      const contract = await getDaoContract([
+        "function getActiveProposals() public view returns (tuple(uint256 id, address proposer, uint256 tokenId, string description, uint256 forVotes, uint256 againstVotes, uint256 totalTokens, uint256 endBlock, bool executed, uint256 proposalType, address tenant, uint256 rent)[] memory)",
+        "function getPastProposals() public view returns (tuple(uint256 id, address proposer, uint256 tokenId, string description, uint256 forVotes, uint256 againstVotes, uint256 totalTokens, uint256 endBlock, bool executed, uint256 proposalType, address tenant, uint256 rent)[] memory)",
+      ]);
+      const retrievedActiveProposals = await contract.getActiveProposals();
+      const retrievedPastProposals = await contract.getPastProposals();
       const formattedActiveProposals = retrievedActiveProposals.map(
         (proposal) => {
           return {
@@ -86,7 +60,7 @@ export const ProposalsPage = () => {
             endBlock: Number(proposal.endBlock),
             executed: proposal.executed,
             proposalType:
-              Number(proposal.proposalType) == 0 ? "Regular" : "Rent",
+              Number(proposal.proposalType) === 0 ? "Regular" : "Rent",
             tenant: proposal.tenant,
             rent: ethers.formatEther(proposal.rent),
           };
@@ -103,7 +77,8 @@ export const ProposalsPage = () => {
           totalTokens: Number(proposal.totalTokens),
           endBlock: Number(proposal.endBlock),
           executed: proposal.executed,
-          proposalType: Number(proposal.proposalType) == 0 ? "Regular" : "Rent",
+          proposalType:
+            Number(proposal.proposalType) === 0 ? "Regular" : "Rent",
           tenant: proposal.tenant,
           rent: ethers.formatEther(proposal.rent),
         };
@@ -122,32 +97,15 @@ export const ProposalsPage = () => {
 
   const fetchChainInfo = async () => {
     try {
-      // Provider to connect to Sepolia testnet from Metamask
-      const metamaskProvider = new ethers.BrowserProvider(window.ethereum);
-
-      // Get signer from metamask, assume it is already connected
-      const signer = await metamaskProvider.getSigner();
-
-      // Retrieve a contract instance using contract address, ABI, and provider
-      const contract = new ethers.Contract(
-        tokenContractAddress,
-        ["function totalSupply(uint256 id) public view returns (uint256)"],
-        metamaskProvider
-      );
-      // if error could not get contract
-      if (!contract) {
-        console.log("Could not get contract");
-        return;
-      }
-
-      // Get total supply of tokens
-      const retrievedTotalTokens = await contract
-        .connect(signer)
-        .totalSupply(tokenId);
+      const contract = await getTokenContract([
+        "function totalSupply(uint256 id) public view returns (uint256)",
+      ]);
+      const retrievedTotalTokens = await contract.totalSupply(tokenId);
       setTotalTokens(Number(retrievedTotalTokens));
       console.log(`Total tokens for asset ${tokenId} retrieved successfully`);
 
       // Get the current block number
+      const metamaskProvider = new ethers.BrowserProvider(window.ethereum);
       const blockNumber = await metamaskProvider.getBlockNumber();
       setCurrentBlock(blockNumber);
       console.log(`Current block number retrieved successfully`);
@@ -272,7 +230,7 @@ export const ProposalsPage = () => {
                   <TableCell>{proposal.proposer}</TableCell>
                   <TableCell>{proposal.proposalType}</TableCell>
                   <TableCell>{proposal.tenant}</TableCell>
-                  <TableCell>{proposal.rent}</TableCell>
+                  <TableCell>{formatWithSepoliaETH(proposal.rent)}</TableCell>
                   <TableCell>{proposal.description}</TableCell>
                   <TableCell>{formatWithCommas(proposal.forVotes)}</TableCell>
                   <TableCell>
@@ -319,7 +277,7 @@ export const ProposalsPage = () => {
                   <TableCell>{proposal.proposer}</TableCell>
                   <TableCell>{proposal.proposalType}</TableCell>
                   <TableCell>{proposal.tenant}</TableCell>
-                  <TableCell>{proposal.rent}</TableCell>
+                  <TableCell>{formatWithSepoliaETH(proposal.rent)}</TableCell>
                   <TableCell>{proposal.description}</TableCell>
                   <TableCell>{formatWithCommas(proposal.forVotes)}</TableCell>
                   <TableCell>
@@ -333,7 +291,7 @@ export const ProposalsPage = () => {
                       "Executed"
                     ) : (proposal.proposalType === "Regular" &&
                         proposal.proposer === user.linkedWallet) ||
-                      (proposal.proposalType == "Rent" &&
+                      (proposal.proposalType === "Rent" &&
                         proposal.tenant === user.linkedWallet) ? (
                       <>
                         Passed

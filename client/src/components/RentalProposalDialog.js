@@ -9,8 +9,7 @@ import {
   Button,
 } from "@mui/material";
 import { ethers } from "ethers";
-
-const daoContractAddress = process.env.REACT_APP_DEPLOYED_DAO_ADDRESS;
+import { getDaoContract } from "../utils/contractUtils";
 
 export default function RentalProposalDialog({
   tokenName,
@@ -49,28 +48,16 @@ export default function RentalProposalDialog({
 
   const createRentProposal = async (description, tenantAddress, rent) => {
     try {
-      const metamaskProvider = new ethers.BrowserProvider(window.ethereum);
-
-      const signer = await metamaskProvider.getSigner();
-
-      const contract = new ethers.Contract(
-        daoContractAddress,
-        [
-          "function createRentProposal(uint256 tokenId, string memory description, address tenant, uint256 rent) public",
-        ],
-        metamaskProvider
-      );
-      if (!contract) {
-        console.log("Could not get contract");
-        return;
-      }
-
+      const daoContract = await getDaoContract([
+        "function createRentProposal(uint256 tokenId, string memory description, address tenant, uint256 rent) public",
+      ]);
       const rentInWei = ethers.parseEther(rent);
-      console.log(tokenId, description, tenantAddress, rentInWei.toString());
-
-      await contract
-        .connect(signer)
-        .createRentProposal(tokenId, description, tenantAddress, rentInWei);
+      await daoContract.createRentProposal(
+        tokenId,
+        description,
+        tenantAddress,
+        rentInWei
+      );
       console.log(
         `Created new rent proposal for asset ${tokenId} with tenant address ${tenantAddress}, rent ${rent}, and description "${description}"`
       );
@@ -78,6 +65,8 @@ export default function RentalProposalDialog({
       setAlertSeverity("success");
       setAlertOpen(true);
       setDescription("");
+      setTenantAddress("");
+      setRent("");
     } catch (error) {
       console.log("Error creating proposal", error);
       setAlertMessage("Error creating proposal");

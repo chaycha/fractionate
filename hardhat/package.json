@@ -18,7 +18,6 @@
     "ethers": "^6.6.6",
     "hardhat": "^2.17.0",
     "hardhat-gas-reporter": "^1.0.8",
-    "mocha": "^10.2.0",
     "solidity-coverage": "^0.8.0",
     "typechain": "^8.1.0"
   },

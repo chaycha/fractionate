@@ -9,8 +9,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { ethers } from "ethers";
-
-const daoContractAddress = process.env.REACT_APP_DEPLOYED_DAO_ADDRESS;
+import { getDaoContract } from "../utils/contractUtils";
 
 export default function ExecuteProposalDialog({ proposal }) {
   const [alertMessage, setAlertMessage] = useState("");
@@ -36,34 +35,15 @@ export default function ExecuteProposalDialog({ proposal }) {
 
   const executeProposal = async () => {
     try {
-      // Provider to connect to Sepolia testnet from Metamask
-      const metamaskProvider = new ethers.BrowserProvider(window.ethereum);
-
-      // Get signer from metamask, assume it is already connected
-      const signer = await metamaskProvider.getSigner();
-
-      // Retrieve a contract instance using contract address, ABI, and provider
-      const contract = new ethers.Contract(
-        daoContractAddress,
-        ["function executeProposal(uint256 proposalId) public payable"],
-        metamaskProvider
-      );
-      // if error could not get contract
-      if (!contract) {
-        console.log("Could not get contract");
-        return;
-      }
-
+      const daoContract = await getDaoContract([
+        "function executeProposal(uint256 proposalId) public payable",
+      ]);
       const attachedValue =
         proposal.proposalType === "Rent"
           ? ethers.parseEther(proposal.rent)
           : ethers.parseEther("0");
-      // create the proposal
-      // note that the connect() function is NECESSARY here, without it you'll get an error "Contract runner does not support sending transactions"
-      // when this line is executed, a metamask popup will appear asking for your confirmation to sign the transaction
-      await contract
-        .connect(signer)
-        .executeProposal(proposal.id, { value: attachedValue });
+      await daoContract.executeProposal(proposal.id, { value: attachedValue });
+
       console.log(`Executed proposal ${proposal.id}`);
       setAlertMessage(`Executed proposal ${proposal.id}`);
       setAlertSeverity("success");

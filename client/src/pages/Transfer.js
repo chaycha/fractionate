@@ -12,11 +12,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { ethers } from "ethers";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-
-const apiUrl = process.env.REACT_APP_API_URL;
-const tokenContractAddress = process.env.REACT_APP_DEPLOYED_TOKEN_ADDRESS;
+import { getTokenContract } from "../utils/contractUtils";
 
 export const TransferPage = () => {
   const [alertMessage, setAlertMessage] = useState("");
@@ -39,39 +36,17 @@ export const TransferPage = () => {
 
   const transfer = async (receiverAddress, tokenId, amount) => {
     try {
-      // Provider to connect to Sepolia testnet from Alchemy
-      const metamaskProvider = new ethers.BrowserProvider(window.ethereum);
-
-      // Get signer from metamask, assume it is already connected
-      const signer = await metamaskProvider.getSigner();
-
-      // Retrieve a contract instance using contract address, ABI, and provider
-      const contract = new ethers.Contract(
-        tokenContractAddress,
-        [
-          "function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data) external",
-        ],
-        metamaskProvider
+      const tokenContract = await getTokenContract([
+        "function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data) external",
+      ]);
+      const senderAddress = user.linkedWallet;
+      await tokenContract.safeTransferFrom(
+        senderAddress,
+        receiverAddress,
+        tokenId,
+        amount,
+        "0x"
       );
-      // if error could not get contract
-      if (!contract) {
-        console.log("Could not get contract");
-        return;
-      }
-
-      const senderAddress = signer.address;
-      // execute the transfer
-      // note that the connect() function is NECESSARY here, without it you'll get an error "Contract runner does not support sending transactions"
-      // when this line is executed, a metamask popup will appear asking for your confirmation to sign the transaction
-      await contract
-        .connect(signer)
-        .safeTransferFrom(
-          senderAddress,
-          receiverAddress,
-          tokenId,
-          amount,
-          "0x"
-        );
       console.log(
         `Transfer request for ${amount} tokens of id ${tokenId} from ${senderAddress} to ${receiverAddress} is sent.`
       );
@@ -92,22 +67,22 @@ export const TransferPage = () => {
   // Exactly the same function as fetchOwnedTokens in pages/MyAssets.js
   const fetchOwnedTokens = async () => {
     try {
-      const response = await fetch(`${apiUrl}/asset/my-assets`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userAddress: user.linkedWallet,
-        }),
+      const tokenContract = await getTokenContract([
+        "function getTokensOfUser(address account) public view returns (tuple(uint256 id, string name, uint256 pricePerToken, uint256 balance)[] memory)",
+      ]);
+      const receivedResponse = await tokenContract.getTokensOfUser(
+        user.linkedWallet
+      );
+      const formattedResponse = receivedResponse.map((token) => {
+        return {
+          id: Number(token.id),
+          name: token.name,
+          pricePerToken: Number(token.pricePerToken),
+          balance: Number(token.balance),
+        };
       });
-      const receivedResponse = await response.json();
-      if (!response.ok) {
-        throw new Error(receivedResponse.message);
-      }
-      console.log("Get owned tokens successfully:", receivedResponse);
-      setOwnedTokenList(receivedResponse.ownedTokenList);
+      setOwnedTokenList(formattedResponse);
+      console.log(`Retrieved all tokens of ${user.linkedWallet} successfully`);
     } catch (err) {
       console.error(err.message);
     }

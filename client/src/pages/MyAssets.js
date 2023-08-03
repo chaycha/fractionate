@@ -15,8 +15,7 @@ import {
 } from "@mui/material";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { formatWithCommas, formatWithSepoliaETH } from "../utils/numberUtils";
-
-const apiUrl = process.env.REACT_APP_API_URL;
+import { getTokenContract } from "../utils/contractUtils";
 
 export const MyAssetsPage = () => {
   const [user] = useLocalStorage("user", {}); // Access user data stored in local storage
@@ -24,24 +23,24 @@ export const MyAssetsPage = () => {
 
   const fetchOwnedTokens = async () => {
     try {
-      const response = await fetch(`${apiUrl}/asset/my-assets`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userAddress: user.linkedWallet,
-        }),
+      const tokenContract = await getTokenContract([
+        "function getTokensOfUser(address account) public view returns (tuple(uint256 id, string name, uint256 pricePerToken, uint256 balance)[] memory)",
+      ]);
+      const receivedResponse = await tokenContract.getTokensOfUser(
+        user.linkedWallet
+      );
+      const formattedResponse = receivedResponse.map((token) => {
+        return {
+          id: Number(token.id),
+          name: token.name,
+          pricePerToken: Number(token.pricePerToken),
+          balance: Number(token.balance),
+        };
       });
-      const receivedResponse = await response.json();
-      if (!response.ok) {
-        throw new Error(receivedResponse.message);
-      }
-      console.log("Get assets successfully:", receivedResponse);
-      setUserTokenData(receivedResponse.ownedTokenList);
+      setUserTokenData(formattedResponse);
+      console.log(`Retrieved all tokens of ${user.linkedWallet} successfully`);
     } catch (err) {
-      console.error(err.message);
+      console.error(`Retrieve tokens failed:`, err.message);
     }
   };
 

@@ -11,18 +11,15 @@ import {
   Typography,
 } from "@mui/material";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import { ethers } from "ethers";
-
-const apiUrl = process.env.REACT_APP_API_URL;
-const tokenContractAddress = process.env.REACT_APP_DEPLOYED_TOKEN_ADDRESS;
+import { getTokenContract } from "../utils/contractUtils";
 
 export const SubmitAssetsPage = () => {
-  const [user] = useLocalStorage("user", {}); // Access user data stored in local storage
+  const [user] = useLocalStorage("user", {});
   const [assetName, setAssetName] = useState("");
   const [assetPrice, setAssetPrice] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState("success"); // new state variable
+  const [alertSeverity, setAlertSeverity] = useState("success");
 
   const handleSubmitAsset = (event) => {
     event.preventDefault();
@@ -42,80 +39,35 @@ export const SubmitAssetsPage = () => {
     }
 
     submitAsset(assetName, assetPrice);
-    //try {
-    /*
-      const response = await fetch(`${apiUrl}/asset/new-asset`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          assetName: assetName,
-          assetPrice: assetPrice,
-          minerAddress: user.linkedWallet,
-        }),
-      });
-      const receivedResponse = await response.json();
-      if (!response.ok) {
-        throw new Error(receivedResponse.message);
-      }
-      */
   };
 
   const submitAsset = async (assetName, assetPrice) => {
-    //try {
-    const metamaskProvider = new ethers.BrowserProvider(window.ethereum);
-
-    const signer = await metamaskProvider.getSigner();
-
-    const contract = new ethers.Contract(
-      tokenContractAddress,
-      [
+    try {
+      const tokenContract = await getTokenContract([
         "function mintNew(string memory name, uint256 totalSupply, uint256 pricePerToken, address account) public",
-      ],
-      metamaskProvider
-    );
-    if (!contract) {
-      console.log("Could not get contract");
-      return;
-    }
-
-    const pricePerToken = Math.floor(
-      (assetPrice * process.env.REACT_APP_MULTIPLIER) /
-        process.env.REACT_APP_TOKEN_AMOUNT
-    );
-    console.log(contract);
-    console.log(
-      assetName,
-      process.env.REACT_APP_TOKEN_AMOUNT,
-      pricePerToken,
-      user.linkedWallet
-    );
-    await contract
-      .connect(signer)
-      .mintNew(
+      ]);
+      const pricePerToken = Math.floor(
+        (assetPrice * process.env.REACT_APP_MULTIPLIER) /
+          process.env.REACT_APP_TOKEN_AMOUNT
+      );
+      await tokenContract.mintNew(
         assetName,
         process.env.REACT_APP_TOKEN_AMOUNT,
         pricePerToken,
         user.linkedWallet
       );
-    console.log(`Tokenise ${assetName} successfully`);
-    setAlertMessage(`Tokenise ${assetName} successfully`);
-    setAlertSeverity("success");
-    setAlertOpen(true);
-
-    // Clear the form fields
-    setAssetName("");
-    setAssetPrice("");
-    /*
+      console.log(`Tokenise ${assetName} successfully`);
+      setAlertMessage(`Tokenise ${assetName} successfully`);
+      setAlertSeverity("success");
+      setAlertOpen(true);
+      setAssetName("");
+      setAssetPrice("");
     } catch (err) {
       console.error(err.message);
       setAlertMessage(`Tokenise asset failed`);
       setAlertSeverity("error");
       setAlertOpen(true);
     }
-    */
   };
 
   const handleAlertClose = (event, reason) => {

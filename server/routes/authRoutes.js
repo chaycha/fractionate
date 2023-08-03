@@ -124,7 +124,6 @@ router.post("/refresh", (req, res) => {
 
     // Check if refresh token is valid
     if (refreshToken == null) return res.sendStatus(401);
-    //if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
 
     // Verify refresh token using jwt
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
