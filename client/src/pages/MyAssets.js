@@ -13,6 +13,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { ethers } from "ethers";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { formatWithCommas, formatWithSepoliaETH } from "../utils/numberUtils";
 import { getTokenContract } from "../utils/contractUtils";
@@ -81,7 +82,7 @@ export const MyAssetsPage = () => {
             <TableRow>
               <TableCell>Asset ID</TableCell>
               <TableCell>Asset Name</TableCell>
-              <TableCell>Token Price</TableCell>
+              <TableCell>Price Per Token</TableCell>
               <TableCell>Balance</TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
@@ -93,7 +94,11 @@ export const MyAssetsPage = () => {
                   <TableCell>{token.id}</TableCell>
                   <TableCell>{token.name}</TableCell>
                   <TableCell>
-                    {formatWithSepoliaETH(token.pricePerToken)}
+                    {formatWithSepoliaETH(
+                      formatWithCommas(
+                        ethers.formatEther(BigInt(token.pricePerToken))
+                      )
+                    )}
                   </TableCell>
                   <TableCell>{formatWithCommas(token.balance)}</TableCell>
                   <TableCell>

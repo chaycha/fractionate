@@ -10,8 +10,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { ethers } from "ethers";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { getTokenContract } from "../utils/contractUtils";
+import { TOKEN_AMOUNT } from "../constants";
+import { toFixed } from "../utils/numberUtils";
 
 export const SubmitAssetsPage = () => {
   const [user] = useLocalStorage("user", {});
@@ -46,13 +49,12 @@ export const SubmitAssetsPage = () => {
       const tokenContract = await getTokenContract([
         "function mintNew(string memory name, uint256 totalSupply, uint256 pricePerToken, address account) public",
       ]);
-      const pricePerToken = Math.floor(
-        (assetPrice * process.env.REACT_APP_MULTIPLIER) /
-          process.env.REACT_APP_TOKEN_AMOUNT
+      const pricePerToken = ethers.parseEther(
+        toFixed(assetPrice / TOKEN_AMOUNT).toString()
       );
       await tokenContract.mintNew(
         assetName,
-        process.env.REACT_APP_TOKEN_AMOUNT,
+        TOKEN_AMOUNT,
         pricePerToken,
         user.linkedWallet
       );
@@ -115,9 +117,9 @@ export const SubmitAssetsPage = () => {
             required
             fullWidth
             name="price"
-            label="Asset Price"
+            label="Asset Price (in SepoliaETH)"
             id="price"
-            inputProps={{ type: "number", pattern: "[1-9][0-9]*" }}
+            inputProps={{ type: "number" }}
             value={assetPrice}
             onChange={(e) => setAssetPrice(e.target.value)}
           />

@@ -1,0 +1,8 @@
+{
+    "env": {
+      "es2020": true, // This option enables ES2020 globals (to use BigInt)
+      "browser": true,
+      "node": true,
+      "mocha": true
+    }
+  }
