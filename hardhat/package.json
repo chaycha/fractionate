@@ -1,7 +1,7 @@
 {
-  "name": "hardhat",
+  "name": "fractionate-hardhat",
   "version": "1.0.0",
-  "description": "Hardhat project for creating and deploying real estate contracts. No need to be deployed.",
+  "description": "Hardhat project for developing and deploying real estate contracts. Need not be deployed on web.",
   "main": "index.js",
   "author": "Chayapol Chaoveeraprasit",
   "license": "MIT",

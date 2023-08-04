@@ -1,6 +1,7 @@
 {
-  "name": "fractionate",
-  "version": "0.1.0",
+  "name": "fractionate-client",
+  "version": "1.0.0",
+  "description": "Fractionate, a real estate tokenization platform built on Ethereum blockchain with DAO governance.",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.1",
