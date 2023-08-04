@@ -36,8 +36,8 @@ typechain-types
 Thumbs.db
 
 # Ignore PostgreSQL database files
-*.psql
-*.sql
+#*.psql
+#*.sql
 
 # Ignore IDE and editor-specific files
 .vscode/

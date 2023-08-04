@@ -10,7 +10,7 @@ const { sql } = require("@vercel/postgres");
 router.use(cookieparser());
 
 // custom middleware
-// for use with routes that require authentication (taken from /posts example)
+// for use with routes that require authentication
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -68,6 +68,7 @@ router.post("/signup", async (req, res) => {
     // Uncomment this section if you want to use Vercel Postgres (require setting up environment variables for connection)
     const newUser =
       await sql`INSERT INTO user_list (name, email, password, linked_wallet) VALUES(${name}, ${email}, ${password}, ${walletAddress}) RETURNING *;`;
+    // Vercel Postgres code ends here
 
     console.log("New user created");
 
@@ -94,6 +95,7 @@ router.post("/login", async (req, res) => {
     // Uncomment this section if you want to use Vercel Postgres (require setting up environment variables for connection)
     const matchedUsers =
       await sql`SELECT * FROM user_list WHERE email = ${email} AND password = ${password};`;
+    // Vercel Postgres code ends here
 
     // If the email and password are correct, then matchedUsers.rows.length = 1
     // Otherwise, matchedUsers.rows.length = 0
