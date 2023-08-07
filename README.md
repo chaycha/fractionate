@@ -116,7 +116,7 @@ You can now access the app at <a href="http://localhost:3000" target="_blank">lo
 
 To use Fractionate, follow these steps:
 
-1. Navigate to the Fractionate platform in your web browser at <a href="https://fractionate.vercel.app" target="_blank">fractionate.vercel.app</a>.
+1. Navigate to the Fractionate platform in your web browser at <a href="https://fractionate-v1.vercel.app" target="_blank">fractionate-v1.vercel.app</a>.
 2. Create a new wallet on MetaMask (or use your existing Ethereum wallet).
 3. Sign up for Fractionate using your wallet's address.
 4. Allow MetaMask to connect to the site.
