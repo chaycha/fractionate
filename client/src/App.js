@@ -30,31 +30,24 @@ const getUserData = () =>
 
 export const App = createBrowserRouter(
   createRoutesFromElements(
-    <div
-      style={{
-        fontFamily: "sans-serif",
-        textAlign: "center",
-      }}
+    <Route
+      element={<AuthLayout />}
+      loader={() => defer({ userPromise: getUserData() })}
     >
-      <Route
-        element={<AuthLayout />}
-        loader={() => defer({ userPromise: getUserData() })}
-      >
-        <Route element={<HomeLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-        </Route>
-
-        <Route path="/dashboard" element={<ProtectedLayout />}>
-          <Route path="my-assets" element={<MyAssetsPage />} />
-          <Route path="my-assets/:tokenId" element={<ProposalsPage />} />
-          <Route path="submit-assets" element={<SubmitAssetsPage />} />
-          <Route path="transfer" element={<TransferPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="settings" element={<SettingsPage />} />
-        </Route>
+      <Route element={<HomeLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
       </Route>
-    </div>
+
+      <Route path="/dashboard" element={<ProtectedLayout />}>
+        <Route path="my-assets" element={<MyAssetsPage />} />
+        <Route path="my-assets/:tokenId" element={<ProposalsPage />} />
+        <Route path="submit-assets" element={<SubmitAssetsPage />} />
+        <Route path="transfer" element={<TransferPage />} />
+        <Route path="profile" element={<ProfilePage />} />
+        <Route path="settings" element={<SettingsPage />} />
+      </Route>
+    </Route>
   )
 );
