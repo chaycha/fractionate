@@ -19,8 +19,6 @@ yarn-error.log
 .env.local
 .env.development.local
 .env.test.local
-.env.production.local
-.env.sample
 
 # Ignore log files
 logs/
@@ -37,8 +35,8 @@ typechain-types
 Thumbs.db
 
 # Ignore PostgreSQL database files
-#*.psql
-#*.sql
+*.psql
+*.sql
 
 # Ignore IDE and editor-specific files
 .vscode/
