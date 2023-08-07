@@ -1,6 +1,6 @@
 # Fractionate v1.0
 
-Fractionate is a real estate tokenization platform built on the Sepolia testnet of the Ethereum blockchain. It utilizes DAO (Decentralized Autonomous Organization) for governance. This project was developed by Chayapol Chaoveeraprasit as part of the NUS FinTech Lab 2023 Summer Internship.
+Fractionate is a real estate tokenization platform built on the Sepolia testnet of the Ethereum blockchain. It utilizes DAO (Decentralized Autonomous Organization) for governance. This project was developed by Chayapol Chaoveeraprasit as part of NUS FinTech Lab 2023 Summer Internship.
 
 ## Table of Contents
 
