@@ -16,7 +16,6 @@ import { ProposalsPage } from "./pages/Proposals";
 import { ProtectedLayout } from "./components/ProtectedLayout";
 import { HomeLayout } from "./components/HomeLayout";
 import { AuthLayout } from "./components/AuthLayout";
-import "./styles.css";
 
 // ideally, instead of setTimeout, it would be an API call to server to get logged in user data
 
@@ -29,34 +28,33 @@ const getUserData = () =>
       }, 1500) // set loading delay of 1500ms to allow the promise to be completed
   );
 
-// for error
-// const getUserData = () =>
-//   new Promise((resolve, reject) =>
-//     setTimeout(() => {
-//       reject("Error");
-//     }, 3000)
-//   );
-
 export const App = createBrowserRouter(
   createRoutesFromElements(
-    <Route
-      element={<AuthLayout />}
-      loader={() => defer({ userPromise: getUserData() })}
+    <div
+      style={{
+        fontFamily: "sans-serif",
+        textAlign: "center",
+      }}
     >
-      <Route element={<HomeLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-      </Route>
+      <Route
+        element={<AuthLayout />}
+        loader={() => defer({ userPromise: getUserData() })}
+      >
+        <Route element={<HomeLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+        </Route>
 
-      <Route path="/dashboard" element={<ProtectedLayout />}>
-        <Route path="my-assets" element={<MyAssetsPage />} />
-        <Route path="my-assets/:tokenId" element={<ProposalsPage />} />
-        <Route path="submit-assets" element={<SubmitAssetsPage />} />
-        <Route path="transfer" element={<TransferPage />} />
-        <Route path="profile" element={<ProfilePage />} />
-        <Route path="settings" element={<SettingsPage />} />
+        <Route path="/dashboard" element={<ProtectedLayout />}>
+          <Route path="my-assets" element={<MyAssetsPage />} />
+          <Route path="my-assets/:tokenId" element={<ProposalsPage />} />
+          <Route path="submit-assets" element={<SubmitAssetsPage />} />
+          <Route path="transfer" element={<TransferPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
       </Route>
-    </Route>
+    </div>
   )
 );
