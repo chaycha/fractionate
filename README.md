@@ -77,7 +77,7 @@ Here are the environment variables required for each directory:
 
   - `REACT_APP_API_URL`: URL to the backend app
   - `REACT_APP_SEPOLIA_RPC_URL`: URL for RPC provider
-    - Sign up for <a href="https://www.alchemyapi.io/" target="_blank">Alchemy</a>, and create an Alchemy project following point #1 of <a href="https://docs.alchemy.com/docs/alchemy-quickstart-guide" target="_blank">this guide</a>. Make sure to select "network" as "Sepolia".
+    - Sign up for <a href="https://www.alchemyapi.io/" target="_blank">Alchemy</a>, and create an Alchemy project following point #1 of <a href="https://docs.alchemy.com/docs/alchemy-quickstart-guide" target="_blank">this guide</a>. Make sure to select "Ethereum" for chain, and "Ethereum Sepolia" for network.
     - Replace the value of `REACT_APP_SEPOLIA_RPC_URL` with your actual API key obtained from the Alchemy project.
   - `REACT_APP_TOKEN_CONTRACT_ADDRESS`, `REACT_APP_DAO_CONTRACT_ADDRESS`: Contract addresses on Sepolia for token and DAO contracts, respectively. Update these values every time the contracts are re-deployed.
 
